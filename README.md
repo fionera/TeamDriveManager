@@ -9,9 +9,12 @@
     - Name it as you want in this tutorial I name it "TeamdriveManager"
     - After its created select it
 - Click on "Enable APIs"
-    - Enable the Admin SDK
-    - Enable the Identity and Access Management (IAM) API
-    - Enable the Google Drive API
+    - Enable the `Google Drive API`
+    - Enable the `Admin SDK`
+    - Enable the `Identity and Access Management (IAM) API`
+    - Enable the `Cloud Resource Manager API`
+    - Enable the `Service Management API`
+    - Enable the `IAM Service Account Credentials API`
 - Click on "Credentials"
     - "Create Credentials"
     - "Service Account Key"
@@ -35,4 +38,4 @@
     - Select "Manage API client access" in the "Authentication" section
     - In the "Client Name" field enter the service account’s "Client ID"
     - In the next field, "One or More API Scopes", enter the following 
-    - `https://www.googleapis.com/auth/admin.directory.group,https://www.googleapis.com/auth/cloud-platform,https://www.googleapis.com/auth/drive`
+    - `https://www.googleapis.com/auth/admin.directory.group,https://www.googleapis.com/auth/cloud-platform,https://www.googleapis.com/auth/drive,https://www.googleapis.com/auth/service.management`
