@@ -26,8 +26,8 @@ func (a *Api) EnableApi(consumerId, serviceName string) error {
 			logrus.Infof("Enabled %s API", serviceName)
 			break
 		} else {
-			logrus.Infof("Enabling still running. Polling again in 5 Seconds")
-			time.Sleep(5 * time.Second)
+			logrus.Infof("Enabling still running. Polling again in 2 Seconds")
+			time.Sleep(2 * time.Second)
 		}
 	}
 

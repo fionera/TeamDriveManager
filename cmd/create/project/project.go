@@ -5,6 +5,7 @@ import (
 	"github.com/fionera/TeamdriveManager/api"
 	"github.com/fionera/TeamdriveManager/api/cloudresourcemanager"
 	"github.com/fionera/TeamdriveManager/api/servicemanagement"
+	. "github.com/fionera/TeamdriveManager/config"
 	"github.com/sirupsen/logrus"
 )
 
@@ -14,12 +15,6 @@ func NewCommand() cli.Command {
 		Usage:  "Create a Project",
 		Action: CmdCreateProject,
 		Flags: []cli.Flag{
-			cli.StringFlag{
-				Name: "service-account-file",
-			},
-			cli.StringFlag{
-				Name: "impersonate",
-			},
 			cli.StringFlag{
 				Name: "project-id",
 			},
@@ -31,12 +26,20 @@ func NewCommand() cli.Command {
 }
 
 func CmdCreateProject(c *cli.Context) {
-	serviceAccountFile := c.String("service-account-file")
-	impersonate := c.String("impersonate")
 	projectId := c.String("project-id")
 	organization := c.String("organization")
 
-	client, err := api.CreateClient(serviceAccountFile, impersonate, []string{cloudresourcemanager.CloudPlatformScope, servicemanagement.ServiceManagementScope})
+	if projectId == "" {
+		logrus.Error("Please supply the ProjectID to use")
+		return
+	}
+
+	if organization == "" {
+		logrus.Error("Please supply the Organization to use")
+		return
+	}
+
+	client, err := api.CreateClient(App.AppConfig.ServiceAccountFile, App.AppConfig.Impersonate, []string{cloudresourcemanager.CloudPlatformScope, servicemanagement.ServiceManagementScope})
 	if err != nil {
 		logrus.Panic(err)
 		return

@@ -33,8 +33,8 @@ func (a *Api) CreateProject(projectId, organization string) error {
 			logrus.Infof("Creation finished")
 			break
 		} else {
-			logrus.Infof("Creation still running. Polling again in 5 Seconds")
-			time.Sleep(5 * time.Second)
+			logrus.Infof("Creation still running. Polling again in 2 Seconds")
+			time.Sleep(2 * time.Second)
 		}
 	}
 

@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/fionera/TeamdriveManager/config"
 	"os"
 
 	"github.com/codegangsta/cli"
@@ -20,6 +21,11 @@ func main() {
 	app.Flags = GlobalFlags
 	app.Commands = Commands
 	app.CommandNotFound = CommandNotFound
+	app.Before = func(context *cli.Context) error {
+		config.LoadConfig()
+
+		return nil
+	}
 
 	app.Run(os.Args)
 }

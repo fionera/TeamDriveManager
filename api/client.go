@@ -2,6 +2,7 @@ package api
 
 import (
 	"context"
+	"github.com/mitchellh/go-homedir"
 	"golang.org/x/oauth2"
 	"golang.org/x/oauth2/google"
 	"io/ioutil"
@@ -10,7 +11,12 @@ import (
 )
 
 func CreateClient(serviceAccountFile, impersonate string, scopes []string) (*http.Client, error) {
-	loadedCreds, err := ioutil.ReadFile(os.ExpandEnv(serviceAccountFile))
+	path, err := homedir.Expand(os.ExpandEnv(serviceAccountFile))
+	if err != nil {
+		return nil, err
+	}
+
+	loadedCreds, err := ioutil.ReadFile(path)
 	if err != nil {
 		return nil, err
 	}

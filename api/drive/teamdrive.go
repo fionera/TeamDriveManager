@@ -1,13 +1,17 @@
 package drive
 
 import (
+	"github.com/satori/go.uuid"
 	"google.golang.org/api/drive/v3"
-	"math/rand"
-	"strconv"
 )
 
 func (a *Api) CreateTeamDrive(name string) (*drive.TeamDrive, error) {
-	teamDrive, err := a.drive.Teamdrives.Create(strconv.Itoa(rand.Int()), &drive.TeamDrive{
+	id, err := uuid.NewV4()
+	if err != nil {
+		return nil, err
+	}
+
+	teamDrive, err := a.drive.Teamdrives.Create(id.String(), &drive.TeamDrive{
 		Name: name,
 	}).Do()
 
