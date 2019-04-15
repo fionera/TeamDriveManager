@@ -31,7 +31,7 @@
     - Enable "Enable G Suite Domain-wide Delegation"
     - As Product name just use the Project name again
     - Press Save
-    - copy the Client ID to some notepad.exe or so
+    - copy the Client ID to notepad.exe or so
 - Go to the Admin Console (admin.google.com/YOURDOMAIN)
     - Go into "Security" (or use the search bar)
     - Select "Show more" and then "Advanced settings"

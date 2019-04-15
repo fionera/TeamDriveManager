@@ -1,4 +1,4 @@
-package group
+package serviceaccount
 
 import (
 	"github.com/codegangsta/cli"
@@ -8,6 +8,8 @@ import (
 	. "github.com/fionera/TeamdriveManager/config"
 	"github.com/sirupsen/logrus"
 	gIAM "google.golang.org/api/iam/v1"
+	"gopkg.in/AlecAivazis/survey.v1"
+	"os"
 	"sync"
 	"time"
 )
@@ -87,7 +89,23 @@ checkServiceAccountGroup:
 			return
 		}
 
-		logrus.Infof("Couldnt find Service Account Group with Address `%s`. Creating it", serviceAccountGroupAddress)
+		logrus.Warnf("Couldnt find Service Account Group with Address `%s`.", serviceAccountGroupAddress)
+		cont := false
+		prompt := &survey.Confirm{
+			Message: "Should it be created?",
+			Default: true,
+		}
+		err = survey.AskOne(prompt, &cont, nil)
+		if err != nil {
+			logrus.Error(err)
+			return
+		}
+
+		if !cont {
+			logrus.Info("Cancelling.")
+			os.Exit(0)
+		}
+
 		_, err := adminApi.CreateGroup("Service Account Group", serviceAccountGroupAddress)
 		if err != nil {
 			logrus.Error(err)
@@ -96,10 +114,13 @@ checkServiceAccountGroup:
 		logrus.Info("Successfully created Service Account Group")
 	}
 
+listServiceAccountGroupMembers:
 	members, err := adminApi.ListMembers(serviceAccountGroupAddress)
 	if err != nil {
-		logrus.Panic(err)
-		return
+		logrus.Error(err)
+		logrus.Info("This can happen when the group is new. Retrying in 2 Seconds.")
+		time.Sleep(2 * time.Second) // Google is slow
+		goto listServiceAccountGroupMembers
 	}
 
 	logrus.Info("Checking which accounts to add and which member to remove")
@@ -135,6 +156,21 @@ checkServiceAccountGroup:
 	}
 
 	logrus.Infof("Need to add %d Accounts and remove %d Members", len(toAdd), len(toRemove))
+	cont := false
+	prompt := &survey.Confirm{
+		Message: "Do you really want to continue?",
+		Default: true,
+	}
+	err = survey.AskOne(prompt, &cont, nil)
+	if err != nil {
+		logrus.Error(err)
+		return
+	}
+
+	if !cont {
+		logrus.Info("Cancelling.")
+		os.Exit(0)
+	}
 
 	if len(toAdd) > 0 {
 		logrus.Info("Start adding Accounts")
@@ -150,7 +186,7 @@ checkServiceAccountGroup:
 				logrus.Debugf("Adding %s to Group", address)
 				_, err := adminApi.AddMember(serviceAccountGroupAddress, address)
 				if err != nil {
-					logrus.Error(err)
+					logrus.Error("An error occurred when adding an account. Retrying...", err)
 					time.Sleep(100 * time.Millisecond)
 					goto addMemberToGroup
 				}
@@ -179,7 +215,7 @@ checkServiceAccountGroup:
 				logrus.Debugf("Removing %s from Group", address)
 				err := adminApi.RemoveMember(serviceAccountGroupAddress, address)
 				if err != nil {
-					logrus.Error(err)
+					logrus.Error("An error occurred when removing a member. Retrying...", err)
 					time.Sleep(100 * time.Millisecond)
 					goto removeMemeberFromGroup
 				}

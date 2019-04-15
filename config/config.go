@@ -50,7 +50,9 @@ func SaveConfig(config AppConfig) {
 }
 
 func CreateDefaultConfig() {
-	SaveConfig(AppConfig{})
+	SaveConfig(AppConfig{
+		Projects: []string{},
+	})
 }
 
 func LoadConfig() {
@@ -58,9 +60,8 @@ func LoadConfig() {
 	content, err := ioutil.ReadFile(App.ConfigFile)
 	if err != nil {
 		if os.IsNotExist(err) {
-			logrus.Infof("Configfile doesnt exist. Creating default one. Please edit it to your needs")
+			logrus.Infof("Configfile doesnt exist. Creating empty one")
 			CreateDefaultConfig()
-			os.Exit(0)
 			return
 		}
 
@@ -77,11 +78,6 @@ func LoadConfig() {
 
 	if App.Flags.ServiceAccountGroup == "" {
 		config.ServiceAccountGroup = "serviceaccounts"
-	}
-
-	if config.ServiceAccountFile == "" || config.Domain == "" {
-		logrus.Errorf("Please edit the config '%s' and add the required Values", App.ConfigFile)
-		os.Exit(1)
 	}
 
 	if App.Flags.ServiceAccountFile != "" {

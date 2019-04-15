@@ -8,11 +8,14 @@ import (
 	"github.com/fionera/TeamdriveManager/api/cloudresourcemanager"
 	"github.com/fionera/TeamdriveManager/api/iam"
 	"github.com/fionera/TeamdriveManager/api/servicemanagement"
+	"github.com/fionera/TeamdriveManager/cmd/assign/serviceaccount"
 	. "github.com/fionera/TeamdriveManager/config"
 	"github.com/sirupsen/logrus"
+	"gopkg.in/AlecAivazis/survey.v1"
 	"io/ioutil"
 	"os"
 	"sync"
+	"time"
 )
 
 func NewProjectAccountsKeysCommand() cli.Command {
@@ -32,7 +35,7 @@ func NewProjectAccountsKeysCommand() cli.Command {
 }
 
 func CmdCreateProjectAccountsKeys(c *cli.Context) {
-	projectId := c.String("project-id")
+	projectId := c.Args().First()
 	organization := c.String("organization")
 
 	if projectId == "" {
@@ -149,5 +152,30 @@ func CmdCreateProjectAccountsKeys(c *cli.Context) {
 	}
 
 	serviceAccountRequests.Wait()
+
+	App.AppConfig.Projects = append(App.AppConfig.Projects, projectId)
+
 	logrus.Infof("Done :3")
+
+	boolResponse := false
+
+	confirm := &survey.Confirm{
+		Message: "Do you want to assign them to the Service Account Group?",
+		Default: true,
+	}
+
+	err = survey.AskOne(confirm, &boolResponse, nil)
+	if err != nil {
+		logrus.Panic(err)
+		return
+	}
+
+	if !boolResponse {
+		return
+	}
+
+	logrus.Infof("Waiting 5 seconds before querying google for the accounts")
+	time.Sleep(5 * time.Second)
+
+	serviceaccount.CmdAssignServiceAccount(c)
 }
