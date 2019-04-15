@@ -55,3 +55,13 @@ func (a *Api) ListProjects(organization string) ([]*cloudresourcemanager.Project
 
 	return projects, nil
 }
+
+func (a *Api) DeleteProject(projectId string) error {
+	_, err := a.crm.Projects.Delete(projectId).Do()
+
+	if err != nil {
+		return errors.Errorf("Error listing projects: %s", err)
+	}
+
+	return nil
+}

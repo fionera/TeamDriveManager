@@ -39,6 +39,6 @@ func RegisterCommand(command cli.Command) {
 }
 
 func CommandNotFound(c *cli.Context, command string) {
-	logrus.Error("%s: '%s' is not a %s command. See '%s --help'.", c.App.Name, command, c.App.Name, c.App.Name)
+	logrus.Errorf("%s: '%s' is not a %s command. See '%s --help'.", c.App.Name, command, c.App.Name, c.App.Name)
 	os.Exit(2)
 }
