@@ -35,8 +35,12 @@ func CmdCreateProject(c *cli.Context) {
 	}
 
 	if organization == "" {
-		logrus.Error("Please supply the Organization to use")
-		return
+		if App.AppConfig.Organization != "" {
+			organization = App.AppConfig.Organization
+		} else {
+			logrus.Error("Please supply the Organization to use")
+			return
+		}
 	}
 
 	client, err := api.CreateClient(App.AppConfig.ServiceAccountFile, App.AppConfig.Impersonate, []string{cloudresourcemanager.CloudPlatformScope, servicemanagement.ServiceManagementScope})

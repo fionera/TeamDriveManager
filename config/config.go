@@ -13,9 +13,14 @@ type Flags struct {
 }
 
 type AppConfig struct {
-	ServiceAccountFile string
-	Impersonate        string
-	Organization       string // The Organization where the API Projects are created
+	ServiceAccountFile   string
+	ServiceAccountFolder string // The Folder where to save the ServiceAccount Files
+	Impersonate          string
+	Organization         string // The Organization where the API Projects are created
+	Domain               string // The domain under which groups are created
+
+	Projects            []string // The ProjectIds of all Projects that should be considered to be used for Service Accounts
+	ServiceAccountGroup string   // The address of the service account group
 }
 
 type Application struct {
@@ -70,12 +75,14 @@ func LoadConfig() {
 		return
 	}
 
-	if config.ServiceAccountFile == "" {
-		logrus.Errorf("Please edit the config '%s' and add the Service Account File", App.ConfigFile)
-		os.Exit(1)
+	if App.Flags.ServiceAccountGroup == "" {
+		config.ServiceAccountGroup = "serviceaccounts"
 	}
 
-	SaveConfig(config)
+	if config.ServiceAccountFile == "" || config.Domain == "" {
+		logrus.Errorf("Please edit the config '%s' and add the required Values", App.ConfigFile)
+		os.Exit(1)
+	}
 
 	if App.Flags.ServiceAccountFile != "" {
 		config.ServiceAccountFile = App.Flags.ServiceAccountFile
@@ -83,6 +90,10 @@ func LoadConfig() {
 
 	if App.Flags.Impersonate != "" {
 		config.Impersonate = App.Flags.Impersonate
+	}
+
+	if App.Flags.ServiceAccountFolder != "" {
+		config.ServiceAccountFolder = App.Flags.ServiceAccountFolder
 	}
 
 	App.AppConfig = config

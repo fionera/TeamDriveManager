@@ -2,6 +2,7 @@ package combinations
 
 import (
 	"fmt"
+	"github.com/Jeffail/gabs"
 	"github.com/codegangsta/cli"
 	"github.com/fionera/TeamdriveManager/api"
 	"github.com/fionera/TeamdriveManager/api/cloudresourcemanager"
@@ -10,6 +11,7 @@ import (
 	. "github.com/fionera/TeamdriveManager/config"
 	"github.com/sirupsen/logrus"
 	"io/ioutil"
+	"os"
 	"sync"
 )
 
@@ -70,7 +72,6 @@ func CmdCreateProjectAccountsKeys(c *cli.Context) {
 		logrus.Panic(err)
 		return
 	}
-
 	err = crmApi.CreateProject(projectId, organization)
 	if err != nil {
 		logrus.Panic(err)
@@ -83,14 +84,14 @@ func CmdCreateProjectAccountsKeys(c *cli.Context) {
 		return
 	}
 
-	var requests sync.WaitGroup
+	var serviceAccountRequests sync.WaitGroup
 	var running int
 	for i := 1; i <= 100; i++ {
-		requests.Add(1)
+		serviceAccountRequests.Add(1)
 		running++
 
 		go func(i int) {
-			defer requests.Done()
+			defer serviceAccountRequests.Done()
 
 			accountId := fmt.Sprintf("service-account-%d", i)
 
@@ -98,7 +99,7 @@ func CmdCreateProjectAccountsKeys(c *cli.Context) {
 			logrus.Infof("Creating Service Account: %s", accountId)
 			serviceAccount, err := iamApi.CreateServiceAccount(projectId, accountId, "")
 			if err != nil {
-				logrus.Panic(err)
+				logrus.Error(err)
 				goto createServiceAccount
 			}
 
@@ -106,7 +107,7 @@ func CmdCreateProjectAccountsKeys(c *cli.Context) {
 			logrus.Infof("Creating Key for Account: %s", accountId)
 			serviceAccountKey, err := iamApi.CreateServiceAccountKey(serviceAccount)
 			if err != nil {
-				logrus.Panic(err)
+				logrus.Error(err)
 				goto createApiKey
 			}
 
@@ -116,7 +117,25 @@ func CmdCreateProjectAccountsKeys(c *cli.Context) {
 				return
 			}
 
-			err = ioutil.WriteFile(serviceAccount.ProjectId+"_"+serviceAccount.DisplayName+".json", json, 0755)
+			container, err := gabs.ParseJSON(json)
+			if err != nil {
+				logrus.Panicf("Error parsing JSON: %s", err)
+				return
+			}
+
+			_, err = container.Set("service_account", "type")
+			if err != nil {
+				logrus.Panicf("Error changing type: %s", err)
+				return
+			}
+
+			err = os.Mkdir(App.AppConfig.ServiceAccountFolder, 0755)
+			if err != nil && !os.IsExist(err) {
+				logrus.Panicf("Error changing type: %s", err)
+				return
+			}
+
+			err = ioutil.WriteFile(App.AppConfig.ServiceAccountFolder+"/"+serviceAccount.ProjectId+"_"+serviceAccount.DisplayName+".json", container.Bytes(), 0755)
 			if err != nil {
 				logrus.Panic(err)
 				return
@@ -124,11 +143,11 @@ func CmdCreateProjectAccountsKeys(c *cli.Context) {
 		}(i)
 
 		if running > App.Flags.Concurrency {
-			requests.Wait()
+			serviceAccountRequests.Wait()
 			running = 0
 		}
 	}
 
-	requests.Wait()
+	serviceAccountRequests.Wait()
 	logrus.Infof("Done :3")
 }

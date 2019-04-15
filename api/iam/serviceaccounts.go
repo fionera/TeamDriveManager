@@ -1,6 +1,7 @@
 package iam
 
 import (
+	"context"
 	"google.golang.org/api/iam/v1"
 	"strings"
 )
@@ -31,4 +32,20 @@ func (a *Api) CreateServiceAccountKey(serviceAccount *iam.ServiceAccount) (*iam.
 	}
 
 	return serviceAccountKey, nil
+}
+
+func (a *Api) ListServiceAccounts(projectId string) ([]*iam.ServiceAccount, error) {
+	var serviceAccounts []*iam.ServiceAccount
+
+	err := a.iam.Projects.ServiceAccounts.List("projects/"+projectId).Pages(context.Background(), func(list *iam.ListServiceAccountsResponse) error {
+		serviceAccounts = append(serviceAccounts, list.Accounts...)
+
+		return nil
+	})
+
+	if err != nil {
+		return nil, err
+	}
+
+	return serviceAccounts, nil
 }

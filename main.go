@@ -28,4 +28,6 @@ func main() {
 	}
 
 	app.Run(os.Args)
+
+	config.SaveConfig(config.App.AppConfig)
 }

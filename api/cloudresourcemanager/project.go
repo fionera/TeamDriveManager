@@ -1,6 +1,7 @@
 package cloudresourcemanager
 
 import (
+	"context"
 	"github.com/pkg/errors"
 	"github.com/sirupsen/logrus"
 	"google.golang.org/api/cloudresourcemanager/v1"
@@ -39,4 +40,18 @@ func (a *Api) CreateProject(projectId, organization string) error {
 	}
 
 	return nil
+}
+
+func (a *Api) ListProjects(organization string) ([]*cloudresourcemanager.Project, error) {
+	var projects []*cloudresourcemanager.Project
+	err := a.crm.Projects.List().Pages(context.Background(), func(list *cloudresourcemanager.ListProjectsResponse) error {
+		projects = append(projects, list.Projects...)
+
+		return nil
+	})
+	if err != nil {
+		return nil, errors.Errorf("Error listing projects: %s", err)
+	}
+
+	return projects, nil
 }

@@ -22,6 +22,10 @@ var GlobalFlags = []cli.Flag{
 		Name:        "impersonate",
 		Destination: &App.Flags.Impersonate,
 	},
+	cli.StringFlag{
+		Name:        "service-account-folder",
+		Destination: &App.Flags.ServiceAccountFolder,
+	},
 	cli.IntFlag{
 		Name:        "concurrency, c",
 		Destination: &App.Flags.Concurrency,

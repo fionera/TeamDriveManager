@@ -9,6 +9,7 @@ import (
 	. "github.com/fionera/TeamdriveManager/config"
 	"github.com/sirupsen/logrus"
 	"io/ioutil"
+	"os"
 )
 
 func NewCommand() cli.Command {
@@ -73,7 +74,13 @@ func CmdCreateProject(c *cli.Context) {
 		return
 	}
 
-	err = ioutil.WriteFile(serviceAccount.ProjectId+"_"+serviceAccount.DisplayName+".json", json, 0755)
+	err = os.Mkdir(App.AppConfig.ServiceAccountFolder, 0755)
+	if err != nil && !os.IsExist(err) {
+		logrus.Panicf("Error changing type: %s", err)
+		return
+	}
+
+	err = ioutil.WriteFile(App.AppConfig.ServiceAccountFolder+"/"+serviceAccount.ProjectId+"_"+serviceAccount.DisplayName+".json", json, 0755)
 	if err != nil {
 		logrus.Panic(err)
 		return
