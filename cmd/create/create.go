@@ -2,12 +2,12 @@ package create
 
 import (
 	"github.com/codegangsta/cli"
-	. "github.com/fionera/TeamdriveManager/cmd"
+	. "github.com/fionera/TeamDriveManager/cmd"
 
-	createGroup "github.com/fionera/TeamdriveManager/cmd/create/group"
-	createProject "github.com/fionera/TeamdriveManager/cmd/create/project"
-	createServiceAccount "github.com/fionera/TeamdriveManager/cmd/create/serviceaccount"
-	createTeamDrive "github.com/fionera/TeamdriveManager/cmd/create/teamdrive"
+	createGroup "github.com/fionera/TeamDriveManager/cmd/create/group"
+	createProject "github.com/fionera/TeamDriveManager/cmd/create/project"
+	createServiceAccount "github.com/fionera/TeamDriveManager/cmd/create/serviceaccount"
+	createTeamDrive "github.com/fionera/TeamDriveManager/cmd/create/teamdrive"
 )
 
 func init() {

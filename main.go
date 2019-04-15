@@ -1,21 +1,21 @@
 package main
 
 import (
-	"github.com/fionera/TeamdriveManager/config"
-	"github.com/fionera/TeamdriveManager/setup"
+	"github.com/fionera/TeamDriveManager/config"
+	"github.com/fionera/TeamDriveManager/setup"
 	"github.com/sirupsen/logrus"
 	"gopkg.in/AlecAivazis/survey.v1"
 	"os"
 
 	"github.com/codegangsta/cli"
-	. "github.com/fionera/TeamdriveManager/cmd"
-	_ "github.com/fionera/TeamdriveManager/cmd/all"
+	. "github.com/fionera/TeamDriveManager/cmd"
+	_ "github.com/fionera/TeamDriveManager/cmd/all"
 )
 
 func main() {
 
 	app := cli.NewApp()
-	app.Name = "TeamdriveManager"
+	app.Name = "TeamDriveManager"
 	app.Version = "0.1.0"
 	app.Author = "fionera"
 	app.Email = "teamdrive-manager@fionera.de"
@@ -53,5 +53,8 @@ func main() {
 		return nil
 	}
 
-	app.Run(os.Args)
+	err := app.Run(os.Args)
+	if err != nil {
+		logrus.Panic(err)
+	}
 }

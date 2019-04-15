@@ -2,10 +2,10 @@ package serviceaccount
 
 import (
 	"github.com/codegangsta/cli"
-	"github.com/fionera/TeamdriveManager/api"
-	"github.com/fionera/TeamdriveManager/api/admin"
-	"github.com/fionera/TeamdriveManager/api/iam"
-	. "github.com/fionera/TeamdriveManager/config"
+	"github.com/fionera/TeamDriveManager/api"
+	"github.com/fionera/TeamDriveManager/api/admin"
+	"github.com/fionera/TeamDriveManager/api/iam"
+	. "github.com/fionera/TeamDriveManager/config"
 	"github.com/sirupsen/logrus"
 	gIAM "google.golang.org/api/iam/v1"
 	"gopkg.in/AlecAivazis/survey.v1"

@@ -1,7 +1,7 @@
 package setup
 
 import (
-	. "github.com/fionera/TeamdriveManager/config"
+	. "github.com/fionera/TeamDriveManager/config"
 	"github.com/sirupsen/logrus"
 	"gopkg.in/AlecAivazis/survey.v1"
 	"os"

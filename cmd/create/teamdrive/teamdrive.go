@@ -2,9 +2,9 @@ package teamdrive
 
 import (
 	"github.com/codegangsta/cli"
-	"github.com/fionera/TeamdriveManager/api"
-	"github.com/fionera/TeamdriveManager/api/drive"
-	. "github.com/fionera/TeamdriveManager/config"
+	"github.com/fionera/TeamDriveManager/api"
+	"github.com/fionera/TeamDriveManager/api/drive"
+	. "github.com/fionera/TeamDriveManager/config"
 	"github.com/sirupsen/logrus"
 )
 

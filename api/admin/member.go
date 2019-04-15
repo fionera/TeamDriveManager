@@ -23,7 +23,8 @@ func (a *Api) ListMembers(groupAddress string) ([]*admin.Member, error) {
 
 func (a *Api) AddMember(groupAddress, memberAddress string) (*admin.Member, error) {
 	member, err := a.admin.Members.Insert(groupAddress, &admin.Member{
-		Email: memberAddress,
+		Email:            memberAddress,
+		DeliverySettings: "NONE",
 	}).Do()
 
 	if err != nil {

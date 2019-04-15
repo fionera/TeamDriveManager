@@ -2,10 +2,10 @@ package project
 
 import (
 	"github.com/codegangsta/cli"
-	"github.com/fionera/TeamdriveManager/api"
-	"github.com/fionera/TeamdriveManager/api/cloudresourcemanager"
-	"github.com/fionera/TeamdriveManager/api/servicemanagement"
-	. "github.com/fionera/TeamdriveManager/config"
+	"github.com/fionera/TeamDriveManager/api"
+	"github.com/fionera/TeamDriveManager/api/cloudresourcemanager"
+	"github.com/fionera/TeamDriveManager/api/servicemanagement"
+	. "github.com/fionera/TeamDriveManager/config"
 	"github.com/sirupsen/logrus"
 )
 

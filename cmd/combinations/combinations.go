@@ -2,7 +2,7 @@ package combinations
 
 import (
 	"github.com/codegangsta/cli"
-	. "github.com/fionera/TeamdriveManager/cmd"
+	. "github.com/fionera/TeamDriveManager/cmd"
 )
 
 func init() {

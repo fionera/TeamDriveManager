@@ -2,11 +2,10 @@ package teamdrive
 
 import (
 	"github.com/codegangsta/cli"
-	"github.com/fionera/TeamdriveManager/api"
-	"github.com/fionera/TeamdriveManager/api/admin"
-	. "github.com/fionera/TeamdriveManager/config"
+	"github.com/fionera/TeamDriveManager/api"
+	"github.com/fionera/TeamDriveManager/api/admin"
+	. "github.com/fionera/TeamDriveManager/config"
 	"github.com/sirupsen/logrus"
-	"strings"
 )
 
 func NewCommand() cli.Command {
@@ -46,10 +45,6 @@ func CmdListMember(c *cli.Context) {
 
 	var i int
 	for _, group := range groups {
-		if !strings.HasPrefix(group.Name, filter) {
-			continue
-		}
-
 		logrus.Infof("%s", group.Name)
 		i++
 	}

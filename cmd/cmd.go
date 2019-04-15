@@ -1,9 +1,9 @@
 package cmd
 
 import (
-	"fmt"
 	"github.com/codegangsta/cli"
-	. "github.com/fionera/TeamdriveManager/config"
+	. "github.com/fionera/TeamDriveManager/config"
+	"github.com/sirupsen/logrus"
 	"os"
 )
 
@@ -39,6 +39,6 @@ func RegisterCommand(command cli.Command) {
 }
 
 func CommandNotFound(c *cli.Context, command string) {
-	fmt.Fprintf(os.Stderr, "%s: '%s' is not a %s command. See '%s --help'.", c.App.Name, command, c.App.Name, c.App.Name)
+	logrus.Error("%s: '%s' is not a %s command. See '%s --help'.", c.App.Name, command, c.App.Name, c.App.Name)
 	os.Exit(2)
 }

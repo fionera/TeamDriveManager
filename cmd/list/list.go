@@ -2,11 +2,11 @@ package create
 
 import (
 	"github.com/codegangsta/cli"
-	. "github.com/fionera/TeamdriveManager/cmd"
-	listGroups "github.com/fionera/TeamdriveManager/cmd/list/group"
-	listProjects "github.com/fionera/TeamdriveManager/cmd/list/project"
-	listServiceAccounts "github.com/fionera/TeamdriveManager/cmd/list/serviceaccount"
-	listTeamDrives "github.com/fionera/TeamdriveManager/cmd/list/teamdrive"
+	. "github.com/fionera/TeamDriveManager/cmd"
+	listGroups "github.com/fionera/TeamDriveManager/cmd/list/group"
+	listProjects "github.com/fionera/TeamDriveManager/cmd/list/project"
+	listServiceAccounts "github.com/fionera/TeamDriveManager/cmd/list/serviceaccount"
+	listTeamDrives "github.com/fionera/TeamDriveManager/cmd/list/teamdrive"
 )
 
 func init() {
