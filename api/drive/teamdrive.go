@@ -24,9 +24,17 @@ func (a *Api) CreateTeamDrive(name string) (*drive.TeamDrive, error) {
 }
 
 func (a *Api) ListTeamDrives() ([]*drive.TeamDrive, error) {
+	return a.listTeamDrives(false)
+}
+
+func (a *Api) ListAllTeamDrives() ([]*drive.TeamDrive, error) {
+	return a.listTeamDrives(true)
+}
+
+func (a *Api) listTeamDrives(admin bool) ([]*drive.TeamDrive, error) {
 	var teamDrives []*drive.TeamDrive
 
-	err := a.drive.Teamdrives.List().PageSize(100).Pages(context.Background(), func(list *drive.TeamDriveList) error {
+	err := a.drive.Teamdrives.List().UseDomainAdminAccess(admin).PageSize(100).Pages(context.Background(), func(list *drive.TeamDriveList) error {
 		teamDrives = append(teamDrives, list.TeamDrives...)
 		return nil
 	})

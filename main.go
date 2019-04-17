@@ -45,10 +45,14 @@ func main() {
 			setup.Setup()
 		}
 
+		if context.GlobalBool("debug") {
+			logrus.SetLevel(logrus.DebugLevel)
+		}
+
 		return nil
 	}
 	app.After = func(context *cli.Context) error {
-		config.SaveConfig(config.App.AppConfig)
+		config.SaveConfig(config.App.AppConfig) //TODO: When panic on load destroys config
 
 		return nil
 	}

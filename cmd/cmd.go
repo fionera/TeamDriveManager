@@ -12,7 +12,7 @@ var GlobalFlags = []cli.Flag{
 		Name:        "config",
 		Value:       "config.json",
 		Usage:       "The Configfile to use",
-		Destination: &App.ConfigFile,
+		Destination: &App.AppConfigFile,
 	},
 	cli.StringFlag{
 		Name:        "service-account-file",
@@ -29,6 +29,10 @@ var GlobalFlags = []cli.Flag{
 	cli.IntFlag{
 		Name:        "concurrency, c",
 		Destination: &App.Flags.Concurrency,
+	},
+	cli.BoolFlag{
+		Name:        "debug",
+		Destination: &App.Flags.Debug,
 	},
 }
 

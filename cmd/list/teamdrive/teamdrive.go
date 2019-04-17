@@ -6,6 +6,7 @@ import (
 	"github.com/fionera/TeamDriveManager/api/drive"
 	. "github.com/fionera/TeamDriveManager/config"
 	"github.com/sirupsen/logrus"
+	"gopkg.in/AlecAivazis/survey.v1"
 	"strings"
 )
 
@@ -37,7 +38,24 @@ func CmdListTeamDrive(c *cli.Context) {
 		return
 	}
 
-	teamDrives, err := driveApi.ListTeamDrives()
+	boolResponse := false
+	confirm := &survey.Confirm{
+		Message: "Use Domain Admin access?",
+		Default: false,
+	}
+
+	err = survey.AskOne(confirm, &boolResponse, nil)
+	if err != nil {
+		logrus.Panic(err)
+		return
+	}
+
+	var list = driveApi.ListTeamDrives
+	if boolResponse {
+		list = driveApi.ListAllTeamDrives
+	}
+
+	teamDrives, err := list()
 	if err != nil {
 		logrus.Panic(err)
 		return

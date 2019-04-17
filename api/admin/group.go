@@ -36,6 +36,7 @@ func (a *Api) ListGroups(domain string) ([]*admin.Group, error) {
 	return groups, nil
 }
 
+// GroupExists needs the full email address as parameter and returns true if it can find a group for it
 func (a *Api) GroupExists(address string) (bool, error) {
 	_, err := a.admin.Groups.Get(address).Do()
 	if err != nil {

@@ -9,6 +9,8 @@ const (
 	DriveScope = drive.DriveScope
 )
 
+var Roles = []string{"owner", "organizer", "fileOrganizer", "writer", "commenter", "reader"}
+
 type Api struct {
 	drive *drive.Service
 }

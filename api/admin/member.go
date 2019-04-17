@@ -28,7 +28,7 @@ func (a *Api) AddMember(groupAddress, memberAddress string) (*admin.Member, erro
 	}).Do()
 
 	if err != nil {
-		return nil, errors.Errorf("Error adding group member: %s", err)
+		return nil, err
 	}
 
 	return member, nil

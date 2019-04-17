@@ -10,6 +10,24 @@ import (
 type Flags struct {
 	AppConfig
 	Concurrency int
+	Debug       bool
+}
+
+type GroupAssignment struct {
+	TeamDriveName  string            // The TeamDrive name without the Prefix
+	GroupAddresses map[string]string // A map which has the role name as key and the address as value
+}
+
+type RawUsers map[string]map[string]string
+
+type TeamDriveConfig struct {
+	NamePrefix string // The string with which every TeamDrive has to begin with
+
+	GlobalUsers RawUsers // A map which has the role name as Key and a map where the users  that are added to all TeamDrives if not overridden anywhere as key and a comment the value
+
+	BlackList map[string][]string // A Map which has the TeamDrive names without the in NamePrefix defined prefix as key and an array of email addresses as value
+
+	GroupAssignments []GroupAssignment // An array which contains one or multiple GroupAssignments
 }
 
 type AppConfig struct {
@@ -21,12 +39,14 @@ type AppConfig struct {
 
 	Projects            []string // The ProjectIds of all Projects that should be considered to be used for Service Accounts
 	ServiceAccountGroup string   // The address of the service account group
+
+	TeamDriveConfig TeamDriveConfig
 }
 
 type Application struct {
-	ConfigFile string
-	AppConfig  AppConfig
-	Flags      Flags
+	AppConfigFile string
+	AppConfig     AppConfig
+	Flags         Flags
 }
 
 var App *Application
@@ -35,33 +55,65 @@ func init() {
 	App = &Application{}
 }
 
-func SaveConfig(config AppConfig) {
-	bytes, err := json.Marshal(config)
+func SaveConfig(config interface{}) {
+	bytes, err := json.MarshalIndent(config, "", "  ")
 	if err != nil {
 		logrus.Panic(err)
 		return
 	}
 
-	err = ioutil.WriteFile(App.ConfigFile, bytes, 0755)
+	var savePath string
+	switch config.(type) {
+	case AppConfig:
+		savePath = App.AppConfigFile
+		break
+	default:
+		logrus.Panic("unknown config type")
+		break
+	}
+
+	err = ioutil.WriteFile(savePath, bytes, 0755)
 	if err != nil {
 		logrus.Panic(err)
 		return
 	}
 }
 
-func CreateDefaultConfig() {
+func CreateDefaultAppConfig() {
 	SaveConfig(AppConfig{
+		Domain:   "domain.com",
 		Projects: []string{},
+		TeamDriveConfig: TeamDriveConfig{
+			GlobalUsers: map[string]map[string]string{
+				"reader": {
+					"you@domain.com":      "myself",
+					"example@example.org": "random dude",
+				},
+			},
+			BlackList: map[string][]string{
+				"Example TeamDrive Name": {
+					"example@example.org",
+				},
+			},
+			GroupAssignments: []GroupAssignment{
+				{
+					TeamDriveName: "Example TeamDrive Name",
+					GroupAddresses: map[string]string{
+						"writer": "example_teamdrive_name_writer@domain.com",
+					},
+				},
+			},
+		},
 	})
 }
 
 func LoadConfig() {
-	logrus.Debugf("Loading Configfile: %s", App.ConfigFile)
-	content, err := ioutil.ReadFile(App.ConfigFile)
+	logrus.Debugf("Loading AppConfig from %s", App.AppConfigFile)
+	appConfigContent, err := ioutil.ReadFile(App.AppConfigFile)
 	if err != nil {
 		if os.IsNotExist(err) {
 			logrus.Infof("Configfile doesnt exist. Creating empty one")
-			CreateDefaultConfig()
+			CreateDefaultAppConfig()
 			return
 		}
 
@@ -69,28 +121,28 @@ func LoadConfig() {
 		return
 	}
 
-	var config AppConfig
-	err = json.Unmarshal(content, &config)
+	var appConfig AppConfig
+	err = json.Unmarshal(appConfigContent, &appConfig)
 	if err != nil {
 		logrus.Panic(err)
 		return
 	}
 
 	if App.Flags.ServiceAccountGroup == "" {
-		config.ServiceAccountGroup = "serviceaccounts"
+		appConfig.ServiceAccountGroup = "serviceaccounts"
 	}
 
 	if App.Flags.ServiceAccountFile != "" {
-		config.ServiceAccountFile = App.Flags.ServiceAccountFile
+		appConfig.ServiceAccountFile = App.Flags.ServiceAccountFile
 	}
 
 	if App.Flags.Impersonate != "" {
-		config.Impersonate = App.Flags.Impersonate
+		appConfig.Impersonate = App.Flags.Impersonate
 	}
 
 	if App.Flags.ServiceAccountFolder != "" {
-		config.ServiceAccountFolder = App.Flags.ServiceAccountFolder
+		appConfig.ServiceAccountFolder = App.Flags.ServiceAccountFolder
 	}
 
-	App.AppConfig = config
+	App.AppConfig = appConfig
 }
