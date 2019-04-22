@@ -1,6 +1,8 @@
 package serviceaccount
 
 import (
+	"encoding/base64"
+	"github.com/Jeffail/gabs"
 	"github.com/codegangsta/cli"
 	"github.com/fionera/TeamDriveManager/api"
 	"github.com/fionera/TeamDriveManager/api/cloudresourcemanager"
@@ -74,13 +76,26 @@ func CmdCreateProject(c *cli.Context) {
 		return
 	}
 
+	container, err := gabs.ParseJSON(json)
+	if err != nil {
+		logrus.Panicf("Error parsing JSON: %s", err)
+		return
+	}
+
+	privateKeyData := container.Path("privateKeyData").String()
+	jsonData, err := base64.StdEncoding.DecodeString(privateKeyData[1 : len(privateKeyData)-1])
+	if err != nil {
+		logrus.Panicf("Error reading key: %s", err)
+		return
+	}
+
 	err = os.Mkdir(App.AppConfig.ServiceAccountFolder, 0755)
 	if err != nil && !os.IsExist(err) {
 		logrus.Panicf("Error changing type: %s", err)
 		return
 	}
 
-	err = ioutil.WriteFile(App.AppConfig.ServiceAccountFolder+"/"+serviceAccount.ProjectId+"_"+serviceAccount.DisplayName+".json", json, 0755)
+	err = ioutil.WriteFile(App.AppConfig.ServiceAccountFolder+"/"+serviceAccount.ProjectId+"_"+serviceAccount.DisplayName+".json", jsonData, 0755)
 	if err != nil {
 		logrus.Panic(err)
 		return

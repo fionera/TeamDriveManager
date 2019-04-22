@@ -1,15 +1,14 @@
 package main
 
 import (
+	"github.com/codegangsta/cli"
+	. "github.com/fionera/TeamDriveManager/cmd"
+	_ "github.com/fionera/TeamDriveManager/cmd/all"
 	"github.com/fionera/TeamDriveManager/config"
 	"github.com/fionera/TeamDriveManager/setup"
 	"github.com/sirupsen/logrus"
 	"gopkg.in/AlecAivazis/survey.v1"
 	"os"
-
-	"github.com/codegangsta/cli"
-	. "github.com/fionera/TeamDriveManager/cmd"
-	_ "github.com/fionera/TeamDriveManager/cmd/all"
 )
 
 func main() {
@@ -52,7 +51,9 @@ func main() {
 		return nil
 	}
 	app.After = func(context *cli.Context) error {
-		config.SaveConfig(config.App.AppConfig) //TODO: When panic on load destroys config
+		if config.App.AppConfig.ServiceAccountFile != "" {
+			config.SaveConfig(config.App.AppConfig)
+		}
 
 		return nil
 	}

@@ -1,6 +1,7 @@
 package combinations
 
 import (
+	"encoding/base64"
 	"fmt"
 	"github.com/Jeffail/gabs"
 	"github.com/codegangsta/cli"
@@ -14,6 +15,7 @@ import (
 	"gopkg.in/AlecAivazis/survey.v1"
 	"io/ioutil"
 	"os"
+	"strings"
 	"sync"
 	"time"
 )
@@ -75,10 +77,27 @@ func CmdCreateProjectAccountsKeys(c *cli.Context) {
 		logrus.Panic(err)
 		return
 	}
-	err = crmApi.CreateProject(projectId, organization)
+
+	logrus.Info("Listing Projects")
+	projects, err := crmApi.ListProjects(organization)
 	if err != nil {
 		logrus.Panic(err)
 		return
+	}
+
+	var found bool
+	for _, project := range projects {
+		if project.ProjectId == projectId {
+			found = true
+		}
+	}
+
+	if !found {
+		err = crmApi.CreateProject(projectId, organization)
+		if err != nil {
+			logrus.Panic(err)
+			return
+		}
 	}
 
 	err = smApi.EnableApi("project:"+projectId, servicemanagement.DriveApi)
@@ -126,9 +145,10 @@ func CmdCreateProjectAccountsKeys(c *cli.Context) {
 				return
 			}
 
-			_, err = container.Set("service_account", "type")
+			privateKeyData := container.Path("privateKeyData").String()
+			jsonData, err := base64.StdEncoding.DecodeString(privateKeyData[1 : len(privateKeyData)-1])
 			if err != nil {
-				logrus.Panicf("Error changing type: %s", err)
+				logrus.Panicf("Error reading key: %s", err)
 				return
 			}
 
@@ -138,7 +158,7 @@ func CmdCreateProjectAccountsKeys(c *cli.Context) {
 				return
 			}
 
-			err = ioutil.WriteFile(App.AppConfig.ServiceAccountFolder+"/"+serviceAccount.ProjectId+"_"+serviceAccount.DisplayName+".json", container.Bytes(), 0755)
+			err = ioutil.WriteFile(App.AppConfig.ServiceAccountFolder+"/"+serviceAccount.ProjectId+"_"+strings.ReplaceAll(serviceAccount.DisplayName, " ", "_")+".json", jsonData, 0755)
 			if err != nil {
 				logrus.Panic(err)
 				return

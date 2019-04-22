@@ -2,6 +2,7 @@ package iam
 
 import (
 	"context"
+	"fmt"
 	"google.golang.org/api/iam/v1"
 	"strings"
 )
@@ -48,4 +49,14 @@ func (a *Api) ListServiceAccounts(projectId string) ([]*iam.ServiceAccount, erro
 	}
 
 	return serviceAccounts, nil
+}
+
+func (a *Api) DeleteServiceAccount(projectId, accountId string) error {
+	_, err := a.iam.Projects.ServiceAccounts.Delete(fmt.Sprintf("projects/%s/serviceAccounts/%s", projectId, accountId)).Do()
+
+	if err != nil {
+		return err
+	}
+
+	return nil
 }

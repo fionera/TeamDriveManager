@@ -10,6 +10,7 @@ import (
 	. "github.com/fionera/TeamDriveManager/config"
 	"github.com/sirupsen/logrus"
 	drive2 "google.golang.org/api/drive/v3"
+	"google.golang.org/api/googleapi"
 	"gopkg.in/AlecAivazis/survey.v1"
 	"strings"
 	"sync"
@@ -150,11 +151,13 @@ func CheckTeamDrive(teamDrive *drive2.TeamDrive, driveApi *drive.Api, adminApi *
 				_, err := adminApi.AddMember(groupAddress+"@"+App.AppConfig.Domain, userAddress)
 				if err != nil { //Skip existing err
 					logrus.Error(err)
-					//if gerr, ok := err.(*googleapi.Error); ok && gerr.Code != 409 {
-					goto addUser
-					//} else if !ok {
-					//	logrus.Panic(err)
-					//}
+					if gerr, ok := err.(*googleapi.Error); ok {
+						if gerr.Code != 409 && gerr.Code != 404 {
+							goto addUser
+						}
+					} else if !ok {
+						logrus.Panic(err)
+					}
 				}
 			}
 		}
