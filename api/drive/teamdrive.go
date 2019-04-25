@@ -6,13 +6,13 @@ import (
 	"google.golang.org/api/drive/v3"
 )
 
-func (a *Api) CreateTeamDrive(name string) (*drive.TeamDrive, error) {
+func (a *Api) CreateTeamDrive(name string) (*drive.Drive, error) {
 	id, err := uuid.NewV4()
 	if err != nil {
 		return nil, err
 	}
 
-	teamDrive, err := a.drive.Teamdrives.Create(id.String(), &drive.TeamDrive{
+	teamDrive, err := a.drive.Drives.Create(id.String(), &drive.Drive{
 		Name: name,
 	}).Do()
 
@@ -23,19 +23,19 @@ func (a *Api) CreateTeamDrive(name string) (*drive.TeamDrive, error) {
 	return teamDrive, nil
 }
 
-func (a *Api) ListTeamDrives() ([]*drive.TeamDrive, error) {
+func (a *Api) ListTeamDrives() ([]*drive.Drive, error) {
 	return a.listTeamDrives(false)
 }
 
-func (a *Api) ListAllTeamDrives() ([]*drive.TeamDrive, error) {
+func (a *Api) ListAllTeamDrives() ([]*drive.Drive, error) {
 	return a.listTeamDrives(true)
 }
 
-func (a *Api) listTeamDrives(admin bool) ([]*drive.TeamDrive, error) {
-	var teamDrives []*drive.TeamDrive
+func (a *Api) listTeamDrives(admin bool) ([]*drive.Drive, error) {
+	var teamDrives []*drive.Drive
 
-	err := a.drive.Teamdrives.List().UseDomainAdminAccess(admin).PageSize(100).Pages(context.Background(), func(list *drive.TeamDriveList) error {
-		teamDrives = append(teamDrives, list.TeamDrives...)
+	err := a.drive.Drives.List().UseDomainAdminAccess(admin).PageSize(100).Pages(context.Background(), func(list *drive.DriveList) error {
+		teamDrives = append(teamDrives, list.Drives...)
 		return nil
 	})
 

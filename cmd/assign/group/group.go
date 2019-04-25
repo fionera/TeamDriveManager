@@ -82,7 +82,7 @@ func CmdAssignGroup(c *cli.Context) {
 	worker.Wait()
 }
 
-func CheckTeamDrive(teamDrive *drive2.TeamDrive, driveApi *drive.Api, adminApi *admin.Api, wait *sync.WaitGroup) {
+func CheckTeamDrive(teamDrive *drive2.Drive, driveApi *drive.Api, adminApi *admin.Api, wait *sync.WaitGroup) {
 	defer wait.Done()
 
 	logrus.Infof("Checking TeamDrive `%s`", teamDrive.Name)
