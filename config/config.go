@@ -128,7 +128,7 @@ func LoadConfig() {
 		return
 	}
 
-	if App.Flags.ServiceAccountGroup == "" {
+	if App.Flags.ServiceAccountGroup != "" {
 		appConfig.ServiceAccountGroup = "serviceaccounts"
 	}
 

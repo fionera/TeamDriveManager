@@ -3,6 +3,7 @@ package drive
 import (
 	"context"
 	"github.com/satori/go.uuid"
+	"github.com/sirupsen/logrus"
 	"google.golang.org/api/drive/v3"
 )
 
@@ -34,6 +35,7 @@ func (a *Api) ListAllTeamDrives() ([]*drive.Drive, error) {
 func (a *Api) listTeamDrives(admin bool) ([]*drive.Drive, error) {
 	var teamDrives []*drive.Drive
 
+	logrus.Debugf("Getting Drive List with admin: %t", admin)
 	err := a.drive.Drives.List().UseDomainAdminAccess(admin).PageSize(100).Pages(context.Background(), func(list *drive.DriveList) error {
 		teamDrives = append(teamDrives, list.Drives...)
 		return nil
