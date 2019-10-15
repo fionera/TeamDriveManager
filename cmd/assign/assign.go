@@ -1,11 +1,11 @@
 package group
 
 import (
-	"github.com/codegangsta/cli"
 	. "github.com/fionera/TeamDriveManager/cmd"
 	assignAddress "github.com/fionera/TeamDriveManager/cmd/assign/address"
 	assignGroup "github.com/fionera/TeamDriveManager/cmd/assign/group"
 	assignServiceAccount "github.com/fionera/TeamDriveManager/cmd/assign/serviceaccount"
+	"github.com/urfave/cli"
 )
 
 func init() {

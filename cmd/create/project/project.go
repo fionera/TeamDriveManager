@@ -1,12 +1,12 @@
 package project
 
 import (
-	"github.com/codegangsta/cli"
 	"github.com/fionera/TeamDriveManager/api"
 	"github.com/fionera/TeamDriveManager/api/cloudresourcemanager"
 	"github.com/fionera/TeamDriveManager/api/servicemanagement"
 	. "github.com/fionera/TeamDriveManager/config"
 	"github.com/sirupsen/logrus"
+	"github.com/urfave/cli"
 )
 
 func NewCommand() cli.Command {

@@ -8,10 +8,7 @@ import (
 )
 
 func (a *Api) CreateTeamDrive(name string) (*drive.Drive, error) {
-	id, err := uuid.NewV4()
-	if err != nil {
-		return nil, err
-	}
+	id := uuid.NewV4()
 
 	teamDrive, err := a.drive.Drives.Create(id.String(), &drive.Drive{
 		Name: name,

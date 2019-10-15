@@ -1,8 +1,8 @@
 package combinations
 
 import (
-	"github.com/codegangsta/cli"
 	. "github.com/fionera/TeamDriveManager/cmd"
+	"github.com/urfave/cli"
 )
 
 func init() {

@@ -3,12 +3,12 @@ package group
 import (
 	"crypto/sha256"
 	"fmt"
-	"github.com/codegangsta/cli"
 	"github.com/fionera/TeamDriveManager/api"
 	"github.com/fionera/TeamDriveManager/api/admin"
 	"github.com/fionera/TeamDriveManager/api/drive"
 	. "github.com/fionera/TeamDriveManager/config"
 	"github.com/sirupsen/logrus"
+	"github.com/urfave/cli"
 	drive2 "google.golang.org/api/drive/v3"
 	"google.golang.org/api/googleapi"
 	"gopkg.in/AlecAivazis/survey.v1"

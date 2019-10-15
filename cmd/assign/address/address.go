@@ -1,21 +1,21 @@
 package address
 
 import (
-	"github.com/codegangsta/cli"
 	"github.com/fionera/TeamDriveManager/api"
 	"github.com/fionera/TeamDriveManager/api/admin"
 	"github.com/fionera/TeamDriveManager/api/drive"
 	"github.com/fionera/TeamDriveManager/api/iam"
 	. "github.com/fionera/TeamDriveManager/config"
 	"github.com/sirupsen/logrus"
+	"github.com/urfave/cli"
 )
 
 func NewAssignAddressCmd() cli.Command {
 	return cli.Command{
-		Name:   "address",
-		Usage:  "Assign an address to a specified teamdrive",
-		Action: CmdAssignAddress,
-		Flags:  []cli.Flag{},
+		Name:      "address",
+		Usage:     "Assign an address to a specified teamdrive",
+		Action:    CmdAssignAddress,
+		Flags:     []cli.Flag{},
 		UsageText: "<TEAMDRIVE> <ADDRESS>",
 	}
 }

@@ -1,9 +1,9 @@
 package cmd
 
 import (
-	"github.com/codegangsta/cli"
 	. "github.com/fionera/TeamDriveManager/config"
 	"github.com/sirupsen/logrus"
+	"github.com/urfave/cli"
 	"os"
 )
 
