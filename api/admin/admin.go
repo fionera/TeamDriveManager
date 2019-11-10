@@ -1,8 +1,9 @@
 package admin
 
 import (
-	"google.golang.org/api/admin/directory/v1"
 	"net/http"
+
+	"google.golang.org/api/admin/directory/v1"
 )
 
 const (

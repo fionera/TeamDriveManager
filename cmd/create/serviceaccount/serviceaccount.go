@@ -2,16 +2,18 @@ package serviceaccount
 
 import (
 	"encoding/base64"
+	"io/ioutil"
+	"os"
+
 	"github.com/Jeffail/gabs"
+	"github.com/sirupsen/logrus"
+	"github.com/urfave/cli"
+
 	"github.com/fionera/TeamDriveManager/api"
 	"github.com/fionera/TeamDriveManager/api/cloudresourcemanager"
 	"github.com/fionera/TeamDriveManager/api/iam"
 	"github.com/fionera/TeamDriveManager/api/servicemanagement"
 	. "github.com/fionera/TeamDriveManager/config"
-	"github.com/sirupsen/logrus"
-	"github.com/urfave/cli"
-	"io/ioutil"
-	"os"
 )
 
 func NewCommand() cli.Command {

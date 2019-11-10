@@ -2,12 +2,13 @@ package api
 
 import (
 	"context"
-	"github.com/mitchellh/go-homedir"
-	"golang.org/x/oauth2"
-	"golang.org/x/oauth2/google"
 	"io/ioutil"
 	"net/http"
 	"os"
+
+	"github.com/mitchellh/go-homedir"
+	"golang.org/x/oauth2"
+	"golang.org/x/oauth2/google"
 )
 
 func CreateClient(serviceAccountFile, impersonate string, scopes []string) (*http.Client, error) {

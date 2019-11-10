@@ -1,14 +1,16 @@
 package main
 
 import (
+	"os"
+
+	"github.com/sirupsen/logrus"
+	"github.com/urfave/cli"
+	"gopkg.in/AlecAivazis/survey.v1"
+
 	. "github.com/fionera/TeamDriveManager/cmd"
 	_ "github.com/fionera/TeamDriveManager/cmd/all"
 	"github.com/fionera/TeamDriveManager/config"
 	"github.com/fionera/TeamDriveManager/setup"
-	"github.com/sirupsen/logrus"
-	"github.com/urfave/cli"
-	"gopkg.in/AlecAivazis/survey.v1"
-	"os"
 )
 
 func main() {

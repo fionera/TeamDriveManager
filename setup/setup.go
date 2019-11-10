@@ -1,10 +1,12 @@
 package setup
 
 import (
-	. "github.com/fionera/TeamDriveManager/config"
+	"os"
+
 	"github.com/sirupsen/logrus"
 	"gopkg.in/AlecAivazis/survey.v1"
-	"os"
+
+	. "github.com/fionera/TeamDriveManager/config"
 )
 
 func Setup() {

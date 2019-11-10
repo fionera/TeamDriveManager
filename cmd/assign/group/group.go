@@ -3,18 +3,20 @@ package group
 import (
 	"crypto/sha256"
 	"fmt"
-	"github.com/fionera/TeamDriveManager/api"
-	"github.com/fionera/TeamDriveManager/api/admin"
-	"github.com/fionera/TeamDriveManager/api/drive"
-	. "github.com/fionera/TeamDriveManager/config"
+	"strings"
+	"sync"
+	"time"
+
 	"github.com/sirupsen/logrus"
 	"github.com/urfave/cli"
 	drive2 "google.golang.org/api/drive/v3"
 	"google.golang.org/api/googleapi"
 	"gopkg.in/AlecAivazis/survey.v1"
-	"strings"
-	"sync"
-	"time"
+
+	"github.com/fionera/TeamDriveManager/api"
+	"github.com/fionera/TeamDriveManager/api/admin"
+	"github.com/fionera/TeamDriveManager/api/drive"
+	. "github.com/fionera/TeamDriveManager/config"
 )
 
 func NewAssignGroupCmd() cli.Command {

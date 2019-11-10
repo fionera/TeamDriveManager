@@ -1,9 +1,10 @@
 package create
 
 import (
+	"github.com/urfave/cli"
+
 	. "github.com/fionera/TeamDriveManager/cmd"
 	generateRclone "github.com/fionera/TeamDriveManager/cmd/generate/rclone"
-	"github.com/urfave/cli"
 )
 
 func init() {

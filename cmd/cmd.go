@@ -1,10 +1,12 @@
 package cmd
 
 import (
-	. "github.com/fionera/TeamDriveManager/config"
+	"os"
+
 	"github.com/sirupsen/logrus"
 	"github.com/urfave/cli"
-	"os"
+
+	. "github.com/fionera/TeamDriveManager/config"
 )
 
 var GlobalFlags = []cli.Flag{

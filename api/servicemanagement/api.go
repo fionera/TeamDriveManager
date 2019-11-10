@@ -1,9 +1,10 @@
 package servicemanagement
 
 import (
+	"time"
+
 	"github.com/sirupsen/logrus"
 	"google.golang.org/api/servicemanagement/v1"
-	"time"
 )
 
 func (a *Api) EnableApi(consumerId, serviceName string) error {

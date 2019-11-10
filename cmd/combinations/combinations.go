@@ -1,8 +1,9 @@
 package combinations
 
 import (
-	. "github.com/fionera/TeamDriveManager/cmd"
 	"github.com/urfave/cli"
+
+	. "github.com/fionera/TeamDriveManager/cmd"
 )
 
 func init() {

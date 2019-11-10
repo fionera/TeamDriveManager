@@ -3,21 +3,23 @@ package combinations
 import (
 	"encoding/base64"
 	"fmt"
+	"io/ioutil"
+	"os"
+	"strings"
+	"sync"
+	"time"
+
 	"github.com/Jeffail/gabs"
+	"github.com/sirupsen/logrus"
+	"github.com/urfave/cli"
+	"gopkg.in/AlecAivazis/survey.v1"
+
 	"github.com/fionera/TeamDriveManager/api"
 	"github.com/fionera/TeamDriveManager/api/cloudresourcemanager"
 	"github.com/fionera/TeamDriveManager/api/iam"
 	"github.com/fionera/TeamDriveManager/api/servicemanagement"
 	"github.com/fionera/TeamDriveManager/cmd/assign/serviceaccount"
 	. "github.com/fionera/TeamDriveManager/config"
-	"github.com/sirupsen/logrus"
-	"github.com/urfave/cli"
-	"gopkg.in/AlecAivazis/survey.v1"
-	"io/ioutil"
-	"os"
-	"strings"
-	"sync"
-	"time"
 )
 
 func NewProjectAccountsKeysCommand() cli.Command {

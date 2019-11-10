@@ -1,8 +1,9 @@
 package servicemanagement
 
 import (
-	"google.golang.org/api/servicemanagement/v1"
 	"net/http"
+
+	"google.golang.org/api/servicemanagement/v1"
 )
 
 const (

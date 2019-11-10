@@ -1,13 +1,15 @@
 package teamdrive
 
 import (
-	"github.com/fionera/TeamDriveManager/api"
-	"github.com/fionera/TeamDriveManager/api/cloudresourcemanager"
-	. "github.com/fionera/TeamDriveManager/config"
+	"strings"
+
 	"github.com/sirupsen/logrus"
 	"github.com/urfave/cli"
 	"gopkg.in/AlecAivazis/survey.v1"
-	"strings"
+
+	"github.com/fionera/TeamDriveManager/api"
+	"github.com/fionera/TeamDriveManager/api/cloudresourcemanager"
+	. "github.com/fionera/TeamDriveManager/config"
 )
 
 func NewCommand() cli.Command {
