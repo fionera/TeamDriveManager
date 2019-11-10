@@ -1,25 +1,29 @@
-package teamdrive
+package serviceaccount
 
 import (
-	"github.com/fionera/TeamDriveManager/api"
-	"github.com/fionera/TeamDriveManager/api/drive"
-	. "github.com/fionera/TeamDriveManager/config"
+	"fmt"
+	"io/ioutil"
+	"strings"
+
 	"github.com/sirupsen/logrus"
 	"github.com/urfave/cli"
 	"gopkg.in/AlecAivazis/survey.v1"
-	"strings"
+
+	"github.com/fionera/TeamDriveManager/api"
+	"github.com/fionera/TeamDriveManager/api/drive"
+	. "github.com/fionera/TeamDriveManager/config"
 )
 
 func NewCommand() cli.Command {
 	return cli.Command{
-		Name:   "teamdrive",
-		Usage:  "List all TeamDrives",
-		Action: CmdListTeamDrive,
+		Name:   "rclone",
+		Usage:  "Generate a rclone config",
+		Action: CmdCreateProject,
 		Flags:  []cli.Flag{},
 	}
 }
 
-func CmdListTeamDrive(c *cli.Context) {
+func CmdCreateProject(c *cli.Context) {
 	filter := strings.Join(c.Args(), " ")
 
 	if filter != "" {
@@ -61,15 +65,19 @@ func CmdListTeamDrive(c *cli.Context) {
 		return
 	}
 
-	var i int
+	sb := strings.Builder{}
 	for _, teamDrive := range teamDrives {
 		if !strings.HasPrefix(teamDrive.Name, filter) {
 			continue
 		}
 
-		logrus.Infof("`%s``%s`", teamDrive.Name, teamDrive.Id)
-		i++
+		sb.WriteString(fmt.Sprintf("[%s]\n", strings.NewReplacer("/", "_", " ", "").Replace(teamDrive.Name)))
+		sb.WriteString("type = drive\n")
+		sb.WriteString("scope = drive\n")
+		sb.WriteString(fmt.Sprintf("teamdrive_id = %s\n", teamDrive.Id))
+		sb.WriteString("\n")
 	}
 
-	logrus.Infof("Found %d TeamDrives", i)
+	fmt.Println(sb.String())
+	_ = ioutil.WriteFile("rclone.conf", []byte(sb.String()), 0644)
 }
