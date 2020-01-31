@@ -17,7 +17,7 @@ func NewAssignAddressCmd() cli.Command {
 		Usage:     "Assign an address to a specified teamdrive",
 		Action:    CmdAssignAddress,
 		Flags:     []cli.Flag{},
-		UsageText: "<TEAMDRIVE> <ADDRESS>",
+		UsageText: "<TEAMDRIVE> <ADDRESS> <TYPE>",
 	}
 }
 
@@ -43,7 +43,7 @@ func CmdAssignAddress(c *cli.Context) {
 
 	for _, teamDrive := range teamDrives {
 		if teamDrive.Name == c.Args().Get(0) {
-			_, err := driveApi.CreatePermission(teamDrive.Id, "organizer", c.Args().Get(1), "user")
+			_, err := driveApi.CreatePermission(teamDrive.Id, "organizer", c.Args().Get(1), c.Args().Get(2))
 			if err != nil {
 				logrus.Error(err)
 				return
