@@ -31,17 +31,26 @@ func contains(s []string, e string) bool {
 
 func CmdAssignAddress(c *cli.Context) {
 
+	const addressTypeUser string = "user"
+	const addressTypeGroup string = "group"
+
+	const roleTypeOrganizer string = "organizer"
+	const roleTypeFileOrganizer string = "fileOrganizer"
+	const roleTypeWriter string = "writer"
+	const roleTypeCommenter string = "commenter"
+	const roleTypeReader string = "reader"
+
 	supportedTypes := []string{
-		"user",
-		"group",
+		addressTypeUser,
+		addressTypeGroup,
 	}
 
 	supportedRoles := []string{
-		"organizer",
-		"fileOrganizer",
-		"writer",
-		"commenter",
-		"reader",
+		roleTypeOrganizer,
+		roleTypeFileOrganizer,
+		roleTypeWriter,
+		roleTypeCommenter,
+		roleTypeReader,
 	}
 
 	teamDriveName := c.Args().Get(0)
