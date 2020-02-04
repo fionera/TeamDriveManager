@@ -1,14 +1,30 @@
 package address
 
 import (
+	"strings"
+
 	"github.com/sirupsen/logrus"
 	"github.com/urfave/cli"
 
 	"github.com/fionera/TeamDriveManager/api"
 	"github.com/fionera/TeamDriveManager/api/admin"
 	"github.com/fionera/TeamDriveManager/api/drive"
-	"github.com/fionera/TeamDriveManager/api/iam"
 	. "github.com/fionera/TeamDriveManager/config"
+)
+
+var (
+	supportedTypes = []string{
+		"user",
+		"group",
+	}
+
+	supportedRoles = []string{
+		"organizer",
+		"fileOrganizer",
+		"writer",
+		"commenter",
+		"reader",
+	}
 )
 
 func NewAssignAddressCmd() cli.Command {
@@ -17,13 +33,51 @@ func NewAssignAddressCmd() cli.Command {
 		Usage:     "Assign an address to a specified teamdrive",
 		Action:    CmdAssignAddress,
 		Flags:     []cli.Flag{},
-		UsageText: "<TEAMDRIVE> <ADDRESS>",
+		UsageText: "<TEAMDRIVE-NAME> <ADDRESS> <TYPE> <ROLE>",
 	}
 }
 
-func CmdAssignAddress(c *cli.Context) {
+func contains(s []string, e string) bool {
+	for _, a := range s {
+		if a == e {
+			return true
+		}
+	}
+	return false
+}
 
-	client, err := api.CreateClient(App.AppConfig.ServiceAccountFile, App.AppConfig.Impersonate, []string{iam.CloudPlatformScope, admin.AdminDirectoryGroupScope})
+func CmdAssignAddress(c *cli.Context) {
+	teamDriveName := c.Args().Get(0)
+	address := c.Args().Get(1)
+	addressType := c.Args().Get(2)
+	role := c.Args().Get(3)
+
+	if teamDriveName == "" {
+		logrus.Error("Please supply a teamdrive name")
+		return
+	}
+
+	if address == "" {
+		logrus.Error("Please supply an address")
+		return
+	}
+
+	if addressType == "" || !contains(supportedTypes, addressType) {
+		logrus.Errorf("Unsupported or empty address type (allowed: %s)", strings.Join(supportedTypes, ", "))
+		return
+	}
+
+	if role == "" {
+		logrus.Info("No role supplied. Setting 'reader' permission...")
+		role = "reader"
+	}
+
+	if !contains(supportedRoles, role) {
+		logrus.Error("Unsupported role: '"+role+"' (allowed: %s)", strings.Join(supportedRoles, ", "))
+		return
+	}
+
+	client, err := api.CreateClient(App.AppConfig.ServiceAccountFile, App.AppConfig.Impersonate, []string{drive.DriveScope, admin.AdminDirectoryGroupScope})
 	if err != nil {
 		logrus.Error(err)
 		return
@@ -42,8 +96,8 @@ func CmdAssignAddress(c *cli.Context) {
 	}
 
 	for _, teamDrive := range teamDrives {
-		if teamDrive.Name == c.Args().Get(0) {
-			_, err := driveApi.CreatePermission(teamDrive.Id, "organizer", c.Args().Get(1), "user")
+		if teamDrive.Name == teamDriveName {
+			_, err := driveApi.CreatePermission(teamDrive.Id, role, address, addressType)
 			if err != nil {
 				logrus.Error(err)
 				return
