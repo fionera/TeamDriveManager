@@ -1,6 +1,8 @@
 package address
 
 import (
+	"strings"
+
 	"github.com/sirupsen/logrus"
 	"github.com/urfave/cli"
 
@@ -8,6 +10,21 @@ import (
 	"github.com/fionera/TeamDriveManager/api/admin"
 	"github.com/fionera/TeamDriveManager/api/drive"
 	. "github.com/fionera/TeamDriveManager/config"
+)
+
+var (
+	supportedTypes = []string{
+		"user",
+		"group",
+	}
+
+	supportedRoles = []string{
+		"organizer",
+		"fileOrganizer",
+		"writer",
+		"commenter",
+		"reader",
+	}
 )
 
 func NewAssignAddressCmd() cli.Command {
@@ -30,29 +47,6 @@ func contains(s []string, e string) bool {
 }
 
 func CmdAssignAddress(c *cli.Context) {
-
-	const addressTypeUser string = "user"
-	const addressTypeGroup string = "group"
-
-	const roleTypeOrganizer string = "organizer"
-	const roleTypeFileOrganizer string = "fileOrganizer"
-	const roleTypeWriter string = "writer"
-	const roleTypeCommenter string = "commenter"
-	const roleTypeReader string = "reader"
-
-	supportedTypes := []string{
-		addressTypeUser,
-		addressTypeGroup,
-	}
-
-	supportedRoles := []string{
-		roleTypeOrganizer,
-		roleTypeFileOrganizer,
-		roleTypeWriter,
-		roleTypeCommenter,
-		roleTypeReader,
-	}
-
 	teamDriveName := c.Args().Get(0)
 	address := c.Args().Get(1)
 	addressType := c.Args().Get(2)
@@ -68,24 +62,19 @@ func CmdAssignAddress(c *cli.Context) {
 		return
 	}
 
-	if addressType == "" {
-		logrus.Error("Please supply an address type (allowed: 'user' or 'group')")
+	if addressType == "" || !contains(supportedTypes, addressType) {
+		logrus.Errorf("Unsupported or empty address type (allowed: %s)", strings.Join(supportedTypes, ", "))
 		return
-	} else {
-		if !contains(supportedTypes, addressType) {
-			logrus.Error("Unsupported type: '" + addressType + "' (allowed: 'user' or 'group')")
-			return
-		}
 	}
 
 	if role == "" {
 		logrus.Info("No role supplied. Setting 'reader' permission...")
 		role = "reader"
-	} else {
-		if !contains(supportedRoles, role) {
-			logrus.Error("Unsupported role: '" + role + "' (allowed: 'organizer', 'fileOrganizer', 'writer', 'commenter', 'reader')")
-			return
-		}
+	}
+
+	if !contains(supportedRoles, role) {
+		logrus.Error("Unsupported role: '"+role+"' (allowed: %s)", strings.Join(supportedRoles, ", "))
+		return
 	}
 
 	client, err := api.CreateClient(App.AppConfig.ServiceAccountFile, App.AppConfig.Impersonate, []string{drive.DriveScope, admin.AdminDirectoryGroupScope})
