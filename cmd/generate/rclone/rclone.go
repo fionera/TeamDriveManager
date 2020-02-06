@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"strings"
+	"unicode"
 
 	"github.com/sirupsen/logrus"
 	"github.com/urfave/cli"
@@ -71,7 +72,23 @@ func CmdCreateProject(c *cli.Context) {
 			continue
 		}
 
-		sb.WriteString(fmt.Sprintf("[%s]\n", strings.NewReplacer("/", "_", " ", "").Replace(teamDrive.Name)))
+		name := strings.Map(func(r rune) rune {
+			if r > unicode.MaxASCII {
+				return -1
+			}
+			return r
+		}, teamDrive.Name)
+
+		name = strings.Map(func(r rune) rune {
+			if r == '/' ||
+				r == '_' ||
+				r == '.' {
+				return '-'
+			}
+			return r
+		}, name)
+
+		sb.WriteString(fmt.Sprintf("[%s]\n", name))
 		sb.WriteString("type = drive\n")
 		sb.WriteString("scope = drive\n")
 		sb.WriteString(fmt.Sprintf("teamdrive_id = %s\n", teamDrive.Id))
