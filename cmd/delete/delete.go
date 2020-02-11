@@ -4,6 +4,7 @@ import (
 	"github.com/urfave/cli"
 
 	. "github.com/fionera/TeamDriveManager/cmd"
+	deleteAddress "github.com/fionera/TeamDriveManager/cmd/delete/address"
 	deleteProject "github.com/fionera/TeamDriveManager/cmd/delete/project"
 	deleteServiceaccount "github.com/fionera/TeamDriveManager/cmd/delete/serviceaccount"
 )
@@ -16,6 +17,7 @@ func init() {
 			Subcommands: []cli.Command{
 				deleteProject.NewCommand(),
 				deleteServiceaccount.NewCommand(),
+				deleteAddress.NewCommand(),
 			},
 		})
 }
