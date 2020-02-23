@@ -36,6 +36,15 @@ func (a *Api) CreateServiceAccountKey(serviceAccount *iam.ServiceAccount) (*iam.
 	return serviceAccountKey, nil
 }
 
+func (a *Api) DeleteServiceAccountKey(projectId, accountId string) error {
+	_, err := a.iam.Projects.ServiceAccounts.Keys.Delete(fmt.Sprintf("projects/%s/serviceAccounts/%s", projectId, accountId)).Do()
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
 func (a *Api) ListServiceAccounts(projectId string) ([]*iam.ServiceAccount, error) {
 	var serviceAccounts []*iam.ServiceAccount
 
@@ -50,6 +59,16 @@ func (a *Api) ListServiceAccounts(projectId string) ([]*iam.ServiceAccount, erro
 	}
 
 	return serviceAccounts, nil
+}
+
+func (a *Api) GetServiceAccount(projectId, accountId string) (*iam.ServiceAccount, error) {
+	serviceAccount, err := a.iam.Projects.ServiceAccounts.Get(fmt.Sprintf("projects/%s/serviceAccounts/%s", projectId, accountId)).Context(context.Background()).Do()
+
+	if err != nil {
+		return nil, err
+	}
+
+	return serviceAccount, nil
 }
 
 func (a *Api) DeleteServiceAccount(projectId, accountId string) error {
