@@ -63,12 +63,6 @@ func CmdRegenerateKeys(c *cli.Context) {
 		return
 	}
 
-	smApi, err := servicemanagement.NewApi(client)
-	if err != nil {
-		logrus.Panic(err)
-		return
-	}
-
 	iamApi, err := iam.NewApi(client)
 	if err != nil {
 		logrus.Panic(err)
@@ -90,16 +84,7 @@ func CmdRegenerateKeys(c *cli.Context) {
 	}
 
 	if !found {
-		err = crmApi.CreateProject(projectId, organization)
-		if err != nil {
-			logrus.Panic(err)
-			return
-		}
-	}
-
-	err = smApi.EnableApi("project:"+projectId, servicemanagement.DriveApi)
-	if err != nil {
-		logrus.Panic(err)
+		logrus.Panicf("Project %s was not found", projectId)
 		return
 	}
 
@@ -172,8 +157,6 @@ func CmdRegenerateKeys(c *cli.Context) {
 	}
 
 	serviceAccountRequests.Wait()
-
-	App.AppConfig.Projects = append(App.AppConfig.Projects, projectId)
 
 	logrus.Infof("Done :3")
 
