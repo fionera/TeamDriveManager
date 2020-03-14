@@ -13,6 +13,7 @@ func init() {
 			Usage: "Commands that do multiple things",
 			Subcommands: []cli.Command{
 				NewProjectAccountsKeysCommand(),
+				NewRegenerateKeysCommand(),
 			},
 		})
 }
