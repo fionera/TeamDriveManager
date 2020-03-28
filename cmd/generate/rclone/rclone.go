@@ -91,7 +91,7 @@ func CmdCreateProject(c *cli.Context) {
 		sb.WriteString(fmt.Sprintf("[%s]\n", name))
 		sb.WriteString("type = drive\n")
 		sb.WriteString("scope = drive\n")
-		sb.WriteString(fmt.Sprintf("teamdrive_id = %s\n", teamDrive.Id))
+		sb.WriteString(fmt.Sprintf("team_drive = %s\n", teamDrive.Id))
 		sb.WriteString("\n")
 	}
 
