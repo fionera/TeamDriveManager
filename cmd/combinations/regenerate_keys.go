@@ -2,19 +2,18 @@ package combinations
 
 import (
 	"encoding/base64"
-	"github.com/Jeffail/gabs"
-	"github.com/fionera/TeamDriveManager/api"
-	"github.com/fionera/TeamDriveManager/api/cloudresourcemanager"
-	"github.com/fionera/TeamDriveManager/api/iam"
-	"github.com/fionera/TeamDriveManager/api/servicemanagement"
-	. "github.com/fionera/TeamDriveManager/config"
-	"github.com/sirupsen/logrus"
-	"github.com/urfave/cli"
-	iam2 "google.golang.org/api/iam/v1"
 	"io/ioutil"
 	"os"
 	"strings"
 	"sync"
+
+	"github.com/Jeffail/gabs"
+	"github.com/sirupsen/logrus"
+	"github.com/urfave/cli"
+	iam2 "google.golang.org/api/iam/v1"
+
+	"github.com/fionera/TeamDriveManager/api"
+	. "github.com/fionera/TeamDriveManager/config"
 )
 
 func NewRegenerateKeysCommand() cli.Command {
@@ -51,26 +50,26 @@ func CmdRegenerateKeys(c *cli.Context) {
 		}
 	}
 
-	client, err := api.CreateClient(App.AppConfig.ServiceAccountFile, App.AppConfig.Impersonate, []string{cloudresourcemanager.CloudPlatformScope, servicemanagement.ServiceManagementScope})
+	tokenSource, err := api.NewTokenSource(App.AppConfig.ServiceAccountFile, App.AppConfig.Impersonate)
 	if err != nil {
 		logrus.Panic(err)
 		return
 	}
 
-	crmApi, err := cloudresourcemanager.NewApi(client)
+	crmApi, err := api.NewCloudResourceManagerService(tokenSource)
 	if err != nil {
 		logrus.Panic(err)
 		return
 	}
 
-	iamApi, err := iam.NewApi(client)
+	iamApi, err := api.NewIAMService(tokenSource)
 	if err != nil {
 		logrus.Panic(err)
 		return
 	}
 
 	logrus.Info("Listing Projects")
-	projects, err := crmApi.ListProjects(organization)
+	projects, err := api.ListProjects(crmApi, organization)
 	if err != nil {
 		logrus.Panic(err)
 		return
@@ -90,7 +89,7 @@ func CmdRegenerateKeys(c *cli.Context) {
 
 	var serviceAccountRequests sync.WaitGroup
 	var running int
-	serviceAccounts, err := iamApi.ListServiceAccounts(projectId)
+	serviceAccounts, err := api.ListServiceAccounts(iamApi, projectId)
 	for _, serviceAccount := range serviceAccounts {
 		serviceAccountRequests.Add(1)
 		running++
@@ -98,21 +97,21 @@ func CmdRegenerateKeys(c *cli.Context) {
 		go func(account *iam2.ServiceAccount) {
 			defer serviceAccountRequests.Done()
 		getServiceAccount:
-			serviceAccountObject, err := iamApi.GetServiceAccount(projectId, account.Email)
+			serviceAccountObject, err := api.GetServiceAccount(iamApi, projectId, account.Email)
 			if err != nil {
 				logrus.Error(err)
 				goto getServiceAccount
 			}
 		deleteApiKey:
 			logrus.Infof("Deleting key for `%s`", account.Email)
-			err = iamApi.DeleteServiceAccountKey(projectId, account.Email)
+			_, err = api.DeleteServiceAccountKey(iamApi, projectId, account.Email)
 			if err != nil {
 				logrus.Error(err)
 				goto deleteApiKey
 			}
 		createApiKey:
 			logrus.Infof("Creating new key for `%s`", account.Email)
-			serviceAccountKey, err := iamApi.CreateServiceAccountKey(serviceAccountObject)
+			serviceAccountKey, err := api.CreateServiceAccountKey(iamApi, serviceAccountObject)
 			if err != nil {
 				logrus.Error(err)
 				goto createApiKey

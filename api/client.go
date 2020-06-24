@@ -1,17 +1,15 @@
 package api
 
 import (
-	"context"
 	"io/ioutil"
-	"net/http"
 	"os"
 
 	"github.com/mitchellh/go-homedir"
-	"golang.org/x/oauth2"
 	"golang.org/x/oauth2/google"
+	"golang.org/x/oauth2/jwt"
 )
 
-func CreateClient(serviceAccountFile, impersonate string, scopes []string) (*http.Client, error) {
+func NewTokenSource(serviceAccountFile, impersonate string) (*jwt.Config, error) {
 	path, err := homedir.Expand(os.ExpandEnv(serviceAccountFile))
 	if err != nil {
 		return nil, err
@@ -22,7 +20,7 @@ func CreateClient(serviceAccountFile, impersonate string, scopes []string) (*htt
 		return nil, err
 	}
 
-	conf, err := google.JWTConfigFromJSON(loadedCreds, scopes...)
+	conf, err := google.JWTConfigFromJSON(loadedCreds)
 	if err != nil {
 		return nil, err
 	}
@@ -31,7 +29,5 @@ func CreateClient(serviceAccountFile, impersonate string, scopes []string) (*htt
 		conf.Subject = impersonate
 	}
 
-	ctx := context.Background()
-
-	return oauth2.NewClient(ctx, conf.TokenSource(ctx)), nil
+	return conf, nil
 }

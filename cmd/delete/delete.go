@@ -1,12 +1,9 @@
-package create
+package delete
 
 import (
 	"github.com/urfave/cli"
 
 	. "github.com/fionera/TeamDriveManager/cmd"
-	deleteAddress "github.com/fionera/TeamDriveManager/cmd/delete/address"
-	deleteProject "github.com/fionera/TeamDriveManager/cmd/delete/project"
-	deleteServiceaccount "github.com/fionera/TeamDriveManager/cmd/delete/serviceaccount"
 )
 
 func init() {
@@ -15,9 +12,9 @@ func init() {
 			Name:  "delete",
 			Usage: "All commands that delete something, like selected Projects",
 			Subcommands: []cli.Command{
-				deleteProject.NewCommand(),
-				deleteServiceaccount.NewCommand(),
-				deleteAddress.NewCommand(),
+				NewDeleteAddressCommand(),
+				NewDeleteProjectCommand(),
+				NewDeleteServiceAccountCommand(),
 			},
 		})
 }

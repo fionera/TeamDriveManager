@@ -4,11 +4,6 @@ import (
 	"github.com/urfave/cli"
 
 	. "github.com/fionera/TeamDriveManager/cmd"
-
-	createGroup "github.com/fionera/TeamDriveManager/cmd/create/group"
-	createProject "github.com/fionera/TeamDriveManager/cmd/create/project"
-	createServiceAccount "github.com/fionera/TeamDriveManager/cmd/create/serviceaccount"
-	createTeamDrive "github.com/fionera/TeamDriveManager/cmd/create/teamdrive"
 )
 
 func init() {
@@ -17,10 +12,10 @@ func init() {
 			Name:  "create",
 			Usage: "All commands that create something, like a TeamDrive",
 			Subcommands: []cli.Command{
-				createTeamDrive.NewCommand(),
-				createProject.NewCommand(),
-				createServiceAccount.NewCommand(),
-				createGroup.NewCommand(),
+				NewCreateTeamDriveCommand(),
+				NewCreateProjectCommand(),
+				NewCreateServiceAccountCommand(),
+				NewCreateGroupCommand(),
 			},
 		})
 }

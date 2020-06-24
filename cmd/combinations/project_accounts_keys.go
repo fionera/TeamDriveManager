@@ -15,10 +15,7 @@ import (
 	"gopkg.in/AlecAivazis/survey.v1"
 
 	"github.com/fionera/TeamDriveManager/api"
-	"github.com/fionera/TeamDriveManager/api/cloudresourcemanager"
-	"github.com/fionera/TeamDriveManager/api/iam"
-	"github.com/fionera/TeamDriveManager/api/servicemanagement"
-	"github.com/fionera/TeamDriveManager/cmd/assign/serviceaccount"
+	"github.com/fionera/TeamDriveManager/cmd/assign"
 	. "github.com/fionera/TeamDriveManager/config"
 )
 
@@ -56,32 +53,32 @@ func CmdCreateProjectAccountsKeys(c *cli.Context) {
 		}
 	}
 
-	client, err := api.CreateClient(App.AppConfig.ServiceAccountFile, App.AppConfig.Impersonate, []string{cloudresourcemanager.CloudPlatformScope, servicemanagement.ServiceManagementScope})
+	tokenSource, err := api.NewTokenSource(App.AppConfig.ServiceAccountFile, App.AppConfig.Impersonate)
 	if err != nil {
 		logrus.Panic(err)
 		return
 	}
 
-	crmApi, err := cloudresourcemanager.NewApi(client)
+	crmApi, err := api.NewCloudResourceManagerService(tokenSource)
 	if err != nil {
 		logrus.Panic(err)
 		return
 	}
 
-	smApi, err := servicemanagement.NewApi(client)
+	smApi, err := api.NewServiceManagementService(tokenSource)
 	if err != nil {
 		logrus.Panic(err)
 		return
 	}
 
-	iamApi, err := iam.NewApi(client)
+	iamApi, err := api.NewIAMService(tokenSource)
 	if err != nil {
 		logrus.Panic(err)
 		return
 	}
 
 	logrus.Info("Listing Projects")
-	projects, err := crmApi.ListProjects(organization)
+	projects, err := api.ListProjects(crmApi, organization)
 	if err != nil {
 		logrus.Panic(err)
 		return
@@ -95,14 +92,14 @@ func CmdCreateProjectAccountsKeys(c *cli.Context) {
 	}
 
 	if !found {
-		err = crmApi.CreateProject(projectId, organization)
+		err = api.CreateProject(crmApi, projectId, organization)
 		if err != nil {
 			logrus.Panic(err)
 			return
 		}
 	}
 
-	err = smApi.EnableApi("project:"+projectId, servicemanagement.DriveApi)
+	err = api.EnableApi(smApi, "project:"+projectId, api.DriveApi)
 	if err != nil {
 		logrus.Panic(err)
 		return
@@ -121,7 +118,7 @@ func CmdCreateProjectAccountsKeys(c *cli.Context) {
 
 		createServiceAccount:
 			logrus.Infof("Creating Service Account: %s", accountId)
-			serviceAccount, err := iamApi.CreateServiceAccount(projectId, accountId, "")
+			serviceAccount, err := api.CreateServiceAccount(iamApi, projectId, accountId, "")
 			if err != nil {
 				logrus.Error(err)
 				goto createServiceAccount
@@ -129,7 +126,7 @@ func CmdCreateProjectAccountsKeys(c *cli.Context) {
 
 		createApiKey:
 			logrus.Infof("Creating Key for Account: %s", accountId)
-			serviceAccountKey, err := iamApi.CreateServiceAccountKey(serviceAccount)
+			serviceAccountKey, err := api.CreateServiceAccountKey(iamApi, serviceAccount)
 			if err != nil {
 				logrus.Error(err)
 				goto createApiKey
@@ -199,5 +196,5 @@ func CmdCreateProjectAccountsKeys(c *cli.Context) {
 	logrus.Infof("Waiting 5 seconds before querying google for the accounts")
 	time.Sleep(5 * time.Second)
 
-	serviceaccount.CmdAssignServiceAccount(c)
+	assign.CmdAssignServiceAccount(c)
 }
