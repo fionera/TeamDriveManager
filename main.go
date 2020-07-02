@@ -13,11 +13,14 @@ import (
 	"github.com/fionera/TeamDriveManager/setup"
 )
 
+// Version - defined default version if it's not passed through flags during build
+var Version string = "master"
+
 func main() {
 
 	app := cli.NewApp()
 	app.Name = "TeamDriveManager"
-	app.Version = "0.1.0"
+	app.Version = Version
 	app.Author = "fionera"
 	app.Email = "teamdrive-manager@fionera.de"
 	app.Usage = ""
