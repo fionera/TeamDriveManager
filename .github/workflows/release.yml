@@ -55,4 +55,5 @@ jobs:
         with:
           file: '/home/runner/work/TeamDriveManager/TeamDriveManager/build/*.zip'
           draft: false
-          tags: false
+          tags: true
+          verbose: true
