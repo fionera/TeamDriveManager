@@ -45,12 +45,14 @@ jobs:
         run: |
           cd build
           for file in ./* ; do zip "${file}.zip" "$file" ; done
+          ls -lah
+          readlink -e .
 
       - name: Upload release to GitHub
         uses: xresloader/upload-to-github-release@v1.1.3
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          file: '/home/runner/work/teamdrivemanager/teamdrivemanager/build/teamdrivemanager*'
+          file: '/home/runner/work/teamdrivemanager/teamdrivemanager/build/*.zip'
           draft: false
           tags: false
