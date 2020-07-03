@@ -1,10 +1,9 @@
 package list
 
 import (
-	"github.com/AlecAivazis/survey/v2"
-
 	"github.com/sirupsen/logrus"
 	"github.com/urfave/cli"
+	"gopkg.in/AlecAivazis/survey.v1"
 
 	"github.com/fionera/TeamDriveManager/api"
 	. "github.com/fionera/TeamDriveManager/config"
@@ -34,15 +33,9 @@ func CmdHideTeamDrive(c *cli.Context) {
 		return
 	}
 
+	var drives []string
 	if driveId != "" {
-		response, err := api.HideTeamDrive(driveApi, driveId)
-
-		if err != nil {
-			logrus.Panic(err)
-			return
-		}
-
-		logrus.Infof("`%s``%t`", response.Name, response.Hidden)
+		drives = []string{driveId}
 	} else {
 		var boolResponse bool
 		confirm := &survey.Confirm{
@@ -68,17 +61,22 @@ func CmdHideTeamDrive(c *cli.Context) {
 		}
 
 		for _, teamDrive := range teamDrives {
-			if teamDrive.Hidden {
-				continue
-			}
-			response, err := api.HideTeamDrive(driveApi, teamDrive.Id)
-
-			if err != nil {
-				logrus.Error(err)
+			if !teamDrive.Hidden {
 				continue
 			}
 
-			logrus.Infof("`%s``%t`", response.Name, response.Hidden)
+			drives = append(drives, teamDrive.Id)
 		}
+	}
+
+	for _, teamDrive := range drives {
+		response, err := api.HideTeamDrive(driveApi, teamDrive)
+
+		if err != nil {
+			logrus.Error(err)
+			continue
+		}
+
+		logrus.Infof("`%s``%t`", response.Name)
 	}
 }

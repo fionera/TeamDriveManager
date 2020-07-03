@@ -6,6 +6,7 @@ import (
 	_ "github.com/fionera/TeamDriveManager/cmd/create"
 	_ "github.com/fionera/TeamDriveManager/cmd/edit"
 	_ "github.com/fionera/TeamDriveManager/cmd/delete"
+	_ "github.com/fionera/TeamDriveManager/cmd/edit"
 	_ "github.com/fionera/TeamDriveManager/cmd/generate"
 	_ "github.com/fionera/TeamDriveManager/cmd/list"
 )
