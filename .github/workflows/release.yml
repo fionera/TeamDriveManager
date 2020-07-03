@@ -11,44 +11,46 @@ jobs:
     name: Build
     runs-on: ubuntu-latest
     steps:
-    - name: Set up Go 1.x
-      uses: actions/setup-go@v2
-      with:
-        go-version: ^1.14
-      id: go
+      - name: Set up Go 1.x
+        uses: actions/setup-go@v2
+        with:
+          go-version: ^1.14
+        id: go
 
-    - name: Check out code into the Go module directory
-      uses: actions/checkout@v2
+      - name: Check out code into the Go module directory
+        uses: actions/checkout@v2
 
-    - name: Set tag to environment variable
-      run: echo ::set-env name=VCS_REF::${GITHUB_REF#refs/*/}
+      - name: Set tag to environment variable
+        run: echo ::set-env name=VCS_REF::${GITHUB_REF#refs/*/}
 
-    - name: Output info to log
-      run: |
+      - name: Output info to log
+        run: |
           echo $VCS_REF
           echo ${{ env.VCS_REF }}
 
-    - name: Golang CGO cross compiler
-      uses: crazy-max/ghaction-xgo@v1.3.0
-      with:
-        xgo_version: latest
-        go_version: latest
-        dest: build
-        targets: linux/*,windows/*,darwin/*
-        prefix: teamdrivemanager-${{ env.VCS_REF }}
-        v: true
-        x: false
-        buildmode: default
-        ldflags: "-X main.Version=${{ env.VCS_REF }}"
+      - name: Golang CGO cross compiler
+        uses: crazy-max/ghaction-xgo@v1.3.0
+        with:
+          xgo_version: latest
+          go_version: latest
+          dest: build
+          targets: linux/*,windows/*,darwin/*
+          prefix: teamdrivemanager-${{ env.VCS_REF }}
+          v: true
+          x: false
+          buildmode: default
+          ldflags: '-X main.Version=${{ env.VCS_REF }}'
 
-    - name: Zip binaries
-      run: for file in ./* ; do zip "${file}.zip" "$file" ; done
+      - name: Zip binaries
+        run: |
+          cd build
+          for file in ./* ; do zip "${file}.zip" "$file" ; done
 
-    - name: Upload release to GitHub
-      uses: xresloader/upload-to-github-release@v1.1.3
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        file: "/home/runner/work/teamdrivemanager/teamdrivemanager/build/teamdrivemanager*"
-        draft: false
-        tags: false
+      - name: Upload release to GitHub
+        uses: xresloader/upload-to-github-release@v1.1.3
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          file: '/home/runner/work/teamdrivemanager/teamdrivemanager/build/teamdrivemanager*'
+          draft: false
+          tags: false
