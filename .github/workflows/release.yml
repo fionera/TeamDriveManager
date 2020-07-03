@@ -53,6 +53,6 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          file: '/home/runner/work/teamdrivemanager/teamdrivemanager/build/*.zip'
+          file: '/home/runner/work/TeamDriveManager/TeamDriveManager/build/*.zip'
           draft: false
           tags: false
