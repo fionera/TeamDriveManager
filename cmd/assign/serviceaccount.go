@@ -4,6 +4,7 @@ import (
 	"os"
 	"sync"
 	"time"
+	"strings"
 
 	"github.com/sirupsen/logrus"
 	"github.com/urfave/cli"
@@ -186,9 +187,14 @@ listServiceAccountGroupMembers:
 				logrus.Debugf("Adding %s to Group", address)
 				_, err := api.AddMember(adminApi, serviceAccountGroupAddress, address)
 				if err != nil {
-					logrus.Error("An error occurred when adding an account. Retrying...", err)
-					time.Sleep(100 * time.Millisecond)
-					goto addMemberToGroup
+					if strings.Contains(err.Error(),"409: Member already exists., duplicate") {
+                                                logrus.Info("Account already exists. Skipping.")
+                                                time.Sleep(100 * time.Millisecond)
+                                        } else {
+                            			logrus.Error("An error occurred when adding an account. Retrying...", err)
+                            			time.Sleep(100 * time.Millisecond)
+                            			goto addMemberToGroup
+                                        }
 				}
 			}(address)
 
