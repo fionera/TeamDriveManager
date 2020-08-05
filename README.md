@@ -33,9 +33,11 @@
     - Press Save
     - copy the Client ID to notepad.exe or so
 - Go to the Admin Console (admin.google.com/YOURDOMAIN)
-    - Go into "Security" (or use the search bar)
-    - Select "Show more" and then "Advanced settings"
-    - Select "Manage API client access" in the "Authentication" section
-    - In the "Client Name" field enter the service account’s "Client ID"
-    - In the next field, "One or More API Scopes", enter the following 
+    - Open menu on the left
+    - Go into "Security > Settings" (or use the search bar)
+    - Click on the "Advanced Settings"
+    - Select "Manage domain wide delegation" in the "Domain wide delegation" section
+    - Click "Add new"
+    - In the "Client ID" field enter the service account’s "Client ID"
+    - In the next field, "OAuth scopes (comma-delimited)", enter the following 
     - `https://www.googleapis.com/auth/admin.directory.group,https://www.googleapis.com/auth/cloud-platform,https://www.googleapis.com/auth/drive,https://www.googleapis.com/auth/service.management`
