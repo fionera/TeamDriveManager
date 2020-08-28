@@ -126,9 +126,10 @@ func CmdCreateProjectAccountsKeys(c *cli.Context) {
 						return
 					} else if gerr.Code == 409 {
 						var serr error
+						logrus.Infof("Account %s already exists, skipping creation.", accountId)
 						serviceAccount, serr = api.GetServiceAccount(iamApi, projectId, accountId+"@"+projectId+".iam.gserviceaccount.com")
 						if serr != nil {
-							logrus.Error(err)
+							logrus.Error(serr)
 							goto createServiceAccount
 						}
 						goto createApiKey
