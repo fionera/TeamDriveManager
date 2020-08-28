@@ -8,6 +8,7 @@ import (
 
 	"github.com/sirupsen/logrus"
 	"github.com/urfave/cli"
+	"google.golang.org/api/googleapi"
 	gIAM "google.golang.org/api/iam/v1"
 	"gopkg.in/AlecAivazis/survey.v1"
 
@@ -187,14 +188,19 @@ listServiceAccountGroupMembers:
 				logrus.Debugf("Adding %s to Group", address)
 				_, err := api.AddMember(adminApi, serviceAccountGroupAddress, address)
 				if err != nil {
-					if strings.Contains(err.Error(),"409: Member already exists., duplicate") {
-                                                logrus.Info("Account already exists. Skipping.")
-                                                time.Sleep(100 * time.Millisecond)
-                                        } else {
-                            			logrus.Error("An error occurred when adding an account. Retrying...", err)
-                            			time.Sleep(100 * time.Millisecond)
-                            			goto addMemberToGroup
-                                        }
+					if gerr, ok := err.(*googleapi.Error); ok {
+						switch gerr.Code {
+						case 409:
+							logrus.Info("Account already exists. Skipping.")
+							time.Sleep(100 * time.Millisecond)
+						default:
+							logrus.Error("An error occurred when adding an account. Retrying...", err)
+							time.Sleep(100 * time.Millisecond)
+							goto addMemberToGroup
+						}
+					} else {
+						logrus.Fatal("An unknown error occurred: ", err)
+					}
 				}
 			}(address)
 
