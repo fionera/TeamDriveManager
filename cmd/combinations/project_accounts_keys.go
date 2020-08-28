@@ -21,6 +21,13 @@ import (
 	. "github.com/fionera/TeamDriveManager/config"
 )
 
+var firstNames = []string{"Matthew", "Zoe", "Logan", "Pahadi", "Liam", "Emily", "Asher", "Rebecca", "Akmal", "Emma", "Tau", "Mercy", "Daniel", "Julia", "Michael", "Sarah", "Harry", "Esther", "Wiley", "Savannah", "Oliver", "Kathryn", "Noah", "Yasmine", "David", "Cathy", "Nathan", "Amelie", "Ian", "Abigail", "Elijah", "Anna", "Julian", "Amy", "Kevin", "Lucia", "Mark", "Michelle", "Kris", "Rachel", "Austin", "Yuvika", "Gyan", "Caitlyn", "Troy", "Natalie", "Luke", "Ann", "Lukas", "Charlotte"}
+var secondNames = []string{"Smith", "Anderson", "Clark", "Wright", "Mitchell", "Johnson", "Thomas", "Rodriguez", "Lopez", "Perez", "Williams", "Jackson", "Lewis", "Hill", "Roberts", "Jones", "White", "Lee", "Scott", "Turner", "Brown", "Harris", "Walker", "Green", "Phillips", "Davis", "Martin", "Hall", "Adams", "Campbell", "Miller", "Thompson", "Allen", "Baker", "Parker", "Wilson", "Garcia", "Young", "Gonzalez", "Evans", "Moore", "Martinez", "Hernandez", "Nelson", "Edwards", "Taylor", "Robinson", "King", "Carter", "Collins"}
+
+func init() {
+	rand.Seed(time.Now().Unix())
+}
+
 func NewProjectAccountsKeysCommand() cli.Command {
 	return cli.Command{
 		Name:   "project_accounts_keys",
@@ -40,11 +47,20 @@ func NewProjectAccountsKeysCommand() cli.Command {
 	}
 }
 
-func CmdCreateProjectAccountsKeys(c *cli.Context) 
-	firstNames := []string{"Matthew", "Zoe", "Logan", "Pahadi", "Liam", "Emily", "Asher", "Rebecca", "Akmal", "Emma", "Tau", "Mercy", "Daniel", "Julia", "Michael", "Sarah", "Harry", "Esther", "Wiley", "Savannah", "Oliver", "Kathryn", "Noah", "Yasmine", "David", "Cathy", "Nathan", "Amelie", "Ian", "Abigail", "Elijah", "Anna", "Julian", "Amy", "Kevin", "Lucia", "Mark", "Michelle", "Kris", "Rachel", "Austin", "Yuvika", "Gyan", "Caitlyn", "Troy", "Natalie", "Luke", "Ann", "Lukas", "Charlotte"}
-	secondNames := []string{"Smith", "Anderson", "Clark", "Wright", "Mitchell", "Johnson", "Thomas", "Rodriguez", "Lopez", "Perez", "Williams", "Jackson", "Lewis", "Hill", "Roberts", "Jones", "White", "Lee", "Scott", "Turner", "Brown", "Harris", "Walker", "Green", "Phillips", "Davis", "Martin", "Hall", "Adams", "Campbell", "Miller", "Thompson", "Allen", "Baker", "Parker", "Wilson", "Garcia", "Young", "Gonzalez", "Evans", "Moore", "Martinez", "Hernandez", "Nelson", "Edwards", "Taylor", "Robinson", "King", "Carter", "Collins"}
+func CmdCreateProjectAccountsKeys(c *cli.Context) {
 	projectId := c.Args().First()
 	organization := c.String("organization")
+	useRandomDisplayNames := c.Bool("random-names")
+
+	displayNameGenerator := func() string {
+		return ""
+	}
+
+	if useRandomDisplayNames {
+		displayNameGenerator = func() string {
+			return firstNames[rand.Intn(len(firstNames))] + " " + secondNames[rand.Intn(len(secondNames))]
+		}
+	}
 
 	if projectId == "" {
 		logrus.Error("Please supply the ProjectID to use")
@@ -126,14 +142,7 @@ func CmdCreateProjectAccountsKeys(c *cli.Context)
 		createServiceAccount:
 			logrus.Infof("Creating Service Account: %s", accountId)
 
-			var displayName string = ""
-
-			if c.Bool("random-names") {
-				rand.Seed(time.Now().Unix())
-				displayName = firstNames[rand.Intn(len(firstNames))] + " " + secondNames[rand.Intn(len(secondNames))]
-			}
-
-			serviceAccount, err := api.CreateServiceAccount(iamApi, projectId, accountId, displayName)
+			serviceAccount, err := api.CreateServiceAccount(iamApi, projectId, accountId, displayNameGenerator())
 			if err != nil {
 				gerr, ok := err.(*googleapi.Error)
 				if !ok {
