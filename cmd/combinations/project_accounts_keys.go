@@ -120,11 +120,11 @@ func CmdCreateProjectAccountsKeys(c *cli.Context) {
 			logrus.Infof("Creating Service Account: %s", accountId)
 			serviceAccount, err := api.CreateServiceAccount(iamApi, projectId, accountId, "")
 			if err != nil {
-				logrus.Error(err)
 				if gerr, ok := err.(*googleapi.Error); ok {
-					if gerr.Code != 409 && gerr.Code != 404 {
-						goto createServiceAccount
-					} else {
+					if gerr.Code == 429 {
+						logrus.Fatalf("Project %s reached maximum service account amount limit.", projectId)
+						return
+					} else if gerr.Code == 409 {
 						var serr error
 						serviceAccount, serr = api.GetServiceAccount(iamApi, projectId, accountId+"@"+projectId+".iam.gserviceaccount.com")
 						if serr != nil {
@@ -132,6 +132,9 @@ func CmdCreateProjectAccountsKeys(c *cli.Context) {
 							goto createServiceAccount
 						}
 						goto createApiKey
+					} else {
+						logrus.Error(err)
+						goto createServiceAccount
 					}
 				} else if !ok {
 					logrus.Error(err)
