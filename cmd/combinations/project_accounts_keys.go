@@ -121,6 +121,14 @@ func CmdCreateProjectAccountsKeys(c *cli.Context) {
 			serviceAccount, err := api.CreateServiceAccount(iamApi, projectId, accountId, "")
 			if err != nil {
 				logrus.Error(err)
+				if strings.Contains(err.Error(), "alreadyExists") {
+					serviceAccount, err = api.GetServiceAccount(iamApi, projectId, accountId+"@"+projectId+".iam.gserviceaccount.com")
+					if err != nil {
+						logrus.Error(err)
+						goto createServiceAccount
+					}
+					goto createApiKey
+				}
 				goto createServiceAccount
 			}
 
