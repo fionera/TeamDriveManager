@@ -121,27 +121,28 @@ func CmdCreateProjectAccountsKeys(c *cli.Context) {
 			logrus.Infof("Creating Service Account: %s", accountId)
 			serviceAccount, err := api.CreateServiceAccount(iamApi, projectId, accountId, "")
 			if err != nil {
-				if gerr, ok := err.(*googleapi.Error); ok {
-					if gerr.Code == 429 {
-						logrus.Fatalf("Project %s reached maximum service account amount limit.", projectId)
-						return
-					} else if gerr.Code == 409 {
-						var serr error
-						logrus.Infof("Account %s already exists, skipping creation.", accountId)
-						serviceAccount, serr = api.GetServiceAccount(iamApi, projectId, accountId+"@"+projectId+".iam.gserviceaccount.com")
-						if serr != nil {
-							logrus.Error(serr)
-							goto createServiceAccount
-						}
-						goto createApiKey
-					} else {
+				gerr, ok := err.(*googleapi.Error)
+				if !ok {
+					logrus.Error(err)
+					goto createServiceAccount
+				}
+
+				switch gerr.Code {
+				case 429:
+					logrus.Fatalf("Project %s reached maximum service account amount limit.", projectId)
+					return
+				case 409:
+					logrus.Infof("Account %s already exists, skipping creation.", accountId)
+					serviceAccount, err = api.GetServiceAccount(iamApi, projectId, accountId+"@"+projectId+".iam.gserviceaccount.com")
+					if err != nil {
 						logrus.Error(err)
 						goto createServiceAccount
 					}
-				} else if !ok {
+					goto createApiKey
+				default:
 					logrus.Error(err)
+					goto createServiceAccount
 				}
-				goto createServiceAccount
 			}
 
 		createApiKey:
