@@ -32,11 +32,16 @@ func NewProjectAccountsKeysCommand() cli.Command {
 			cli.StringFlag{
 				Name: "organization",
 			},
+			cli.BoolFlag{
+				Name: "random-names",
+			},
 		},
 	}
 }
 
-func CmdCreateProjectAccountsKeys(c *cli.Context) {
+func CmdCreateProjectAccountsKeys(c *cli.Context) 
+	firstNames := []string{"Matthew", "Zoe", "Logan", "Pahadi", "Liam", "Emily", "Asher", "Rebecca", "Akmal", "Emma", "Tau", "Mercy", "Daniel", "Julia", "Michael", "Sarah", "Harry", "Esther", "Wiley", "Savannah", "Oliver", "Kathryn", "Noah", "Yasmine", "David", "Cathy", "Nathan", "Amelie", "Ian", "Abigail", "Elijah", "Anna", "Julian", "Amy", "Kevin", "Lucia", "Mark", "Michelle", "Kris", "Rachel", "Austin", "Yuvika", "Gyan", "Caitlyn", "Troy", "Natalie", "Luke", "Ann", "Lukas", "Charlotte"}
+	secondNames := []string{"Smith", "Anderson", "Clark", "Wright", "Mitchell", "Johnson", "Thomas", "Rodriguez", "Lopez", "Perez", "Williams", "Jackson", "Lewis", "Hill", "Roberts", "Jones", "White", "Lee", "Scott", "Turner", "Brown", "Harris", "Walker", "Green", "Phillips", "Davis", "Martin", "Hall", "Adams", "Campbell", "Miller", "Thompson", "Allen", "Baker", "Parker", "Wilson", "Garcia", "Young", "Gonzalez", "Evans", "Moore", "Martinez", "Hernandez", "Nelson", "Edwards", "Taylor", "Robinson", "King", "Carter", "Collins"}
 	projectId := c.Args().First()
 	organization := c.String("organization")
 
@@ -119,7 +124,15 @@ func CmdCreateProjectAccountsKeys(c *cli.Context) {
 
 		createServiceAccount:
 			logrus.Infof("Creating Service Account: %s", accountId)
-			serviceAccount, err := api.CreateServiceAccount(iamApi, projectId, accountId, "")
+
+			var displayName string = ""
+
+			if c.Bool("random-names") {
+				rand.Seed(time.Now().Unix())
+				displayName = firstNames[rand.Intn(len(firstNames))] + " " + secondNames[rand.Intn(len(secondNames))]
+			}
+
+			serviceAccount, err := api.CreateServiceAccount(iamApi, projectId, accountId, displayName)
 			if err != nil {
 				gerr, ok := err.(*googleapi.Error)
 				if !ok {
