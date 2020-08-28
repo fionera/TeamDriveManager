@@ -114,7 +114,7 @@ func CmdCreateProjectAccountsKeys(c *cli.Context) {
 		go func(i int) {
 			defer serviceAccountRequests.Done()
 
-			accountId := fmt.Sprintf("service-account-%d", i)
+			accountId := fmt.Sprintf("service-account-%03d", i)
 
 		createServiceAccount:
 			logrus.Infof("Creating Service Account: %s", accountId)
