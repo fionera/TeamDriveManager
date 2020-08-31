@@ -41,3 +41,5 @@
     - In the "Client ID" field enter the service account’s "Client ID"
     - In the next field, "OAuth scopes (comma-delimited)", enter the following 
     - `https://www.googleapis.com/auth/admin.directory.group,https://www.googleapis.com/auth/cloud-platform,https://www.googleapis.com/auth/drive,https://www.googleapis.com/auth/service.management`
+
+[More stuff is in wiki](https://github.com/fionera/TeamDriveManager/wiki)
