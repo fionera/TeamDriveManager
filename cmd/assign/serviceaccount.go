@@ -215,7 +215,7 @@ listServiceAccountGroupMembers:
 	if len(toRemove) > 0 {
 		logrus.Info("Start removing Members")
 		running = 0
-		for _, address := range toAdd {
+		for _, address := range toRemove {
 			running++
 			requests.Add(1)
 
