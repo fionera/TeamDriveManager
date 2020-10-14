@@ -15,6 +15,7 @@ func init() {
 				NewDeleteAddressCommand(),
 				NewDeleteProjectCommand(),
 				NewDeleteServiceAccountCommand(),
+				NewDeleteTeamDriveCommand(),
 			},
 		})
 }
