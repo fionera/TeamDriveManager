@@ -2,6 +2,7 @@ package api
 
 import (
 	"context"
+
 	uuid "github.com/satori/go.uuid"
 	"github.com/sirupsen/logrus"
 	"golang.org/x/oauth2/jwt"
@@ -122,6 +123,10 @@ func listTeamDrives(driveApi *drive.Service, admin bool) ([]*drive.Drive, error)
 	}
 
 	return teamDrives, nil
+}
+
+func DeleteTeamDrive(driveApi *drive.Service, id string) error {
+	return driveApi.Drives.Delete(id).Do()
 }
 
 func HideTeamDrive(driveApi *drive.Service, driveId string) (*drive.Drive, error) {
