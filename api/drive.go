@@ -125,6 +125,30 @@ func listTeamDrives(driveApi *drive.Service, admin bool) ([]*drive.Drive, error)
 	return teamDrives, nil
 }
 
+func ListAllObjects(driveApi *drive.Service, driveId string) ([]*drive.File, error) {
+	var fileList []*drive.File
+
+	logrus.Debug("Retrieving all files.")
+	err := driveApi.Files.List().IncludeItemsFromAllDrives(true).SupportsAllDrives(true).Corpora("drive").DriveId(driveId).PageSize(1000).Pages(context.Background(), func(list *drive.FileList) error {
+		fileList = append(fileList, list.Files...)
+		return nil
+	})
+
+	if err != nil {
+		return nil, err
+	}
+
+	return fileList, nil
+}
+
+func DeleteObject(driveApi *drive.Service, fileId string) error {
+	return driveApi.Files.Delete(fileId).SupportsAllDrives(true).Do()
+}
+
+func EmptyTrash(driveApi *drive.Service) *drive.FilesEmptyTrashCall {
+	return driveApi.Files.EmptyTrash()
+}
+
 func DeleteTeamDrive(driveApi *drive.Service, id string) error {
 	return driveApi.Drives.Delete(id).Do()
 }
