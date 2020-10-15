@@ -77,7 +77,7 @@ func CmdDeleteTeamDrive(c *cli.Context) {
 
 		api.EmptyTrash(driveApi)
 	}
-
+deleteTeamDrive:
 	err = api.DeleteTeamDrive(driveApi, c.Args().First())
 	if err != nil {
 		if gerr, ok := err.(*googleapi.Error); ok {
@@ -86,6 +86,7 @@ func CmdDeleteTeamDrive(c *cli.Context) {
 				if forceDelete {
 					logrus.Info("Waiting for all objects to finish deletion.")
 					time.Sleep(100 * time.Millisecond)
+					goto deleteTeamDrive
 				} else {
 					logrus.Error("Teamdrive contains objects and therefore cannot be deleted.")
 				}
