@@ -1,6 +1,9 @@
 package delete
 
 import (
+	"sync"
+	"time"
+
 	"github.com/sirupsen/logrus"
 	"github.com/urfave/cli"
 	"google.golang.org/api/googleapi"
@@ -14,7 +17,14 @@ func NewDeleteTeamDriveCommand() cli.Command {
 		Name:   "teamdrive",
 		Usage:  "Delete a Teamdrive",
 		Action: CmdDeleteTeamDrive,
-		Flags:  []cli.Flag{},
+		Flags: []cli.Flag{
+			cli.StringFlag{
+				Name: "teamdrive-id",
+			},
+			cli.BoolFlag{
+				Name: "force-delete",
+			},
+		},
 	}
 }
 
@@ -23,6 +33,7 @@ func CmdDeleteTeamDrive(c *cli.Context) {
 		logrus.Error("Please supply a teamdrive id")
 		return
 	}
+	forceDelete := c.Bool("force-delete")
 
 	tokenSource, err := api.NewTokenSource(App.AppConfig.ServiceAccountFile, App.AppConfig.Impersonate)
 	if err != nil {
@@ -36,12 +47,48 @@ func CmdDeleteTeamDrive(c *cli.Context) {
 		return
 	}
 
+	if forceDelete {
+		driveFiles, err := api.ListAllObjects(driveApi, c.Args().First())
+		if err != nil {
+			logrus.Panic(err)
+		}
+
+		var fileDeleteRequests sync.WaitGroup
+		var running int
+		for i := 0; i < len(driveFiles); i++ {
+			fileDeleteRequests.Add(1)
+			running++
+
+			go func(i int) {
+				defer fileDeleteRequests.Done()
+
+				err = api.DeleteObject(driveApi, driveFiles[i].Id)
+				if err != nil {
+					logrus.Debugf("Failed to delete object: %s", driveFiles[i].Id)
+				}
+				logrus.Infof("%05d: Deleted object: %s", i, driveFiles[i].Id)
+			}(i)
+
+			if running > App.Flags.Concurrency {
+				fileDeleteRequests.Wait()
+				running = 0
+			}
+		}
+
+		api.EmptyTrash(driveApi)
+	}
+
 	err = api.DeleteTeamDrive(driveApi, c.Args().First())
 	if err != nil {
 		if gerr, ok := err.(*googleapi.Error); ok {
 			switch gerr.Code {
 			case 403:
-				logrus.Error("Teamdrive contains objects and therefore cannot be deleted.")
+				if forceDelete {
+					logrus.Info("Waiting for all objects to finish deletion.")
+					time.Sleep(100 * time.Millisecond)
+				} else {
+					logrus.Error("Teamdrive contains objects and therefore cannot be deleted.")
+				}
 				return
 			default:
 				logrus.Error("An error occurred when deleting account.", err)
