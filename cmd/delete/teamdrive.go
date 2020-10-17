@@ -34,6 +34,7 @@ func CmdDeleteTeamDrive(c *cli.Context) {
 		return
 	}
 	forceDelete := c.Bool("force-delete")
+	teamdriveId := c.Args().First()
 
 	tokenSource, err := api.NewTokenSource(App.AppConfig.ServiceAccountFile, App.AppConfig.Impersonate)
 	if err != nil {
@@ -48,7 +49,8 @@ func CmdDeleteTeamDrive(c *cli.Context) {
 	}
 
 	if forceDelete {
-		driveFiles, err := api.ListAllObjects(driveApi, c.Args().First())
+		var query string = "parents = \"" + teamdriveId + "\""
+		driveFiles, err := api.ListAllObjects(driveApi, teamdriveId, query)
 		if err != nil {
 			logrus.Panic(err)
 		}
@@ -78,14 +80,14 @@ func CmdDeleteTeamDrive(c *cli.Context) {
 		api.EmptyTrash(driveApi)
 	}
 deleteTeamDrive:
-	err = api.DeleteTeamDrive(driveApi, c.Args().First())
+	err = api.DeleteTeamDrive(driveApi, teamdriveId)
 	if err != nil {
 		if gerr, ok := err.(*googleapi.Error); ok {
 			switch gerr.Code {
 			case 403:
 				if forceDelete {
 					logrus.Info("Waiting for all objects to finish deletion.")
-					time.Sleep(100 * time.Millisecond)
+					time.Sleep(10 * time.Second)
 					goto deleteTeamDrive
 				} else {
 					logrus.Error("Teamdrive contains objects and therefore cannot be deleted.")
@@ -100,5 +102,5 @@ deleteTeamDrive:
 		}
 	}
 
-	logrus.Infof("Successfully deleted TeamDrive %s", c.Args().First())
+	logrus.Infof("Successfully deleted TeamDrive %s", teamdriveId)
 }
