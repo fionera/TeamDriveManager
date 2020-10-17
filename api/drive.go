@@ -125,17 +125,26 @@ func listTeamDrives(driveApi *drive.Service, admin bool) ([]*drive.Drive, error)
 	return teamDrives, nil
 }
 
-func ListAllObjects(driveApi *drive.Service, driveId string) ([]*drive.File, error) {
+func ListAllObjects(driveApi *drive.Service, driveId string, query string) ([]*drive.File, error) {
 	var fileList []*drive.File
 
 	logrus.Debug("Retrieving all files.")
-	err := driveApi.Files.List().IncludeItemsFromAllDrives(true).SupportsAllDrives(true).Corpora("drive").DriveId(driveId).PageSize(1000).Pages(context.Background(), func(list *drive.FileList) error {
-		fileList = append(fileList, list.Files...)
-		return nil
-	})
-
-	if err != nil {
-		return nil, err
+	if query != "" {
+		err := driveApi.Files.List().IncludeItemsFromAllDrives(true).SupportsAllDrives(true).Corpora("drive").DriveId(driveId).Q(query).PageSize(1000).Pages(context.Background(), func(list *drive.FileList) error {
+			fileList = append(fileList, list.Files...)
+			return nil
+		})
+		if err != nil {
+			return nil, err
+		}
+	} else {
+		err := driveApi.Files.List().IncludeItemsFromAllDrives(true).SupportsAllDrives(true).Corpora("drive").DriveId(driveId).PageSize(1000).Pages(context.Background(), func(list *drive.FileList) error {
+			fileList = append(fileList, list.Files...)
+			return nil
+		})
+		if err != nil {
+			return nil, err
+		}
 	}
 
 	return fileList, nil
