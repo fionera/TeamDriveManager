@@ -49,7 +49,7 @@ func CmdDeleteTeamDrive(c *cli.Context) {
 	}
 
 	if forceDelete {
-		var query string = "parents = \"" + teamdriveId + "\""
+		query := fmt.Sprintf(`parents = "%s"`, teamdriveId)
 		driveFiles, err := api.ListAllObjects(driveApi, teamdriveId, query)
 		if err != nil {
 			logrus.Panic(err)
