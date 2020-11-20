@@ -21,7 +21,7 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Set tag to environment variable
-        run: echo ::set-env name=VCS_REF::${GITHUB_REF#refs/*/}
+        run: echo "VCS_REF=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
 
       - name: Output info to log
         run: |
