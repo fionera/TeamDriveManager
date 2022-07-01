@@ -49,7 +49,7 @@ jobs:
           readlink -e .
 
       - name: Upload release to GitHub
-        uses: xresloader/upload-to-github-release@v1.3.2
+        uses: xresloader/upload-to-github-release@v1.3.4
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
